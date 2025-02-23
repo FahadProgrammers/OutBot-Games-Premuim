@@ -1,0 +1,9 @@
+{
+    "token": "MTI5OTczMzY5NzE0MjE5ODMwMg.GZQJtm.NJ2-cE24G6DWB11ovlQtg5HXlAtZ0BSK5VQ94s",
+    "clientId": "1299733697142198302",
+    "guildId": "1299471640253562941",
+    "mongourl": "mongodb+srv://db:DataBase001112233@cluster0.qqtyd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "prefix": "+",
+    "dsn": "https://e547cda124c9b61df4b3d94e827225cf@o4508586737991680.ingest.de.sentry.io/4508586740023376",
+    "API_KEY": "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"
+}
