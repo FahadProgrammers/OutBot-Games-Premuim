@@ -48,7 +48,7 @@ export default class جمع extends Command {
     const time_1 = new Date().getTime();
     let status = false;
     try {
-      await Collecter(messageFetch, randomKey, randomValue, time_1);
+      await Collecter(messageFetch, randomValue, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

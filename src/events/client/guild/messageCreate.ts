@@ -17,6 +17,8 @@ import Category from "../../../base/enums/Category";
 import utils from "../../../utils/utils";
 import SchemaChannel from "../../../schema/SchemaChannel";
 import BaseEmbed from "../../../utils/embeds/BaseEmbed";
+import SchemaCommandControl from "../../../schema/SchemaCommandControl";
+import SchemaServerUsedStats from "../../../schema/SchemaServerUsedStats";
 export default class MessageCommandHandler extends Event {
   constructor(client: CustomClient) {
     super(client, {
@@ -136,13 +138,53 @@ export default class MessageCommandHandler extends Event {
         }
 
         timestamps.set(message.author.id, now);
-        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+        setTimeout(function() {
+          timestamps.delete(message.author.id)
+        }, cooldownAmount);
         try {
           const findRoleEvent = await schemaRoleEvent.findOne({
             guildId: message.guild?.id,
             channelId: message.channel.id,
           });
+          const findCommandDisable = await SchemaCommandControl.findOne({
+            guildId: message.guild?.id
+          });
 
+
+        await SchemaServerUsedStats.findOneAndUpdate(
+          {
+            guildId: message.guild?.id,
+          },
+          {
+            $inc: { statsall: 1, [`commands.${command.name}`]: 1}
+          },
+          {
+            upsert: true, new: true
+          }
+        );
+
+          if(findCommandDisable) {
+            if(findCommandDisable.command.includes('all')) {
+              return;
+            } else if(findCommandDisable.command.includes('one')) {
+              if(command.category === Category.فرديه) {
+                return;
+              }
+            } else if(findCommandDisable.command.includes('two')) {
+              if(command.category === Category.ثنائيه) {
+                return;
+              }
+            } else if(findCommandDisable.command.includes('three')) {
+              if(command.category === Category.مجموعه) {
+                return;
+              }
+            } else if(findCommandDisable.command.includes('all')) {
+              return;
+            } else if(findCommandDisable.command.includes(command.name)) {
+                return;
+              }
+            }
+          
 
           if (findRoleEvent) {
             const findRole = message.member?.roles.cache.some((role) =>

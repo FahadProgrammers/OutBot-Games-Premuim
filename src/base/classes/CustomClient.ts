@@ -1,6 +1,8 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
 import { Client, Collection, GatewayIntentBits, TextChannel } from "discord.js";
 import ICustomClient from "../interfaces/ICustomClient";
-import IConfig from "../interfaces/IConfig";
 import Handler from "./Handler";
 import Command from "./Command";
 import SubCommand from "./SubCommand";
@@ -8,7 +10,6 @@ import messagecommands from "./MessageCreate";
 import messagecommandshorts from "./MessageCreate";
 export default class CustomClient extends Client implements ICustomClient {
   handler: Handler;
-  config: IConfig;
   commands: Collection<string, Command>;
   subcommands: Collection<string, SubCommand>;
   colldowns: Collection<string, Collection<string, number>>;
@@ -26,8 +27,7 @@ export default class CustomClient extends Client implements ICustomClient {
         GatewayIntentBits.GuildPresences
       ],
     });
-    this.config = require(`${process.cwd()}/src/data/config.json`);
-    this.polls = new Map();  // Initialize the polls map
+    this.polls = new Map(); 
     this.handler = new Handler(this);
     this.commands = new Collection();
     this.subcommands = new Collection();
@@ -43,8 +43,7 @@ export default class CustomClient extends Client implements ICustomClient {
     this.LoadEvents();
 
     this.login(
-
- this.config.token
+      process.env.token
     ).catch((err) => console.log(err));
     
   }

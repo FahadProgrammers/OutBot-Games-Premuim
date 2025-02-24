@@ -9,15 +9,16 @@ import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
+import emoji from "../../utils/functions/emojis";
 
 export default class help extends Command {
   constructor(client: CustomClient) {
     super(client, {
-      name: "help",
-      description: "طلب مساعده",
+      name: "الاوامر",
+      description: "معرفة الاوامر المخصصه.",
       category: Category.ادمن,
       cooldown: 3,
-      aliases: ["العاب", "مساعده", "مساعدة"],
+      aliases: ["العاب", "مساعده", "مساعدة", "help", "الأوامر"],
     });
   }
   async execute(message: Message) {
@@ -32,11 +33,11 @@ export default class help extends Command {
 
 <:premuim:1341414399696703549>  يمكنك **الاختيار** من القائمه أدناه للحصول على **المطلوب**.
 
-1 - <:0_:1341414321955278868> الالعاب الفرديه
-2 - <:0_:1341414321955278868> الالعاب الثنائيه
-3 - <:0_:1341414321955278868> الالعاب الجماعيه
-4 - <:0_:1341414321955278868> اوامر السلاش
-5 - <:all_2:1341693257062813746> الكل
+1 - ${emoji.esar_arrow} الالعاب الفرديه
+2 - ${emoji.esar_arrow} الالعاب الثنائيه
+3 - ${emoji.esar_arrow} الالعاب الجماعيه
+4 - ${emoji.esar_arrow} اوامر السلاش
+5 - ${emoji.all} الكل
 
 `,
 line: true,

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Events_1 = __importDefault(require("../../base/classes/Events"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
+const SchemaCommandControl_1 = __importDefault(require("../../schema/SchemaCommandControl"));
 class CommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -51,7 +52,31 @@ class CommandHandler extends Events_1.default {
                             return 1;
                         return a.name.localeCompare(b.name); // ترتيب أبجدي لبقية العناصر
                     });
+                    const ddfind = yield SchemaCommandControl_1.default.findOne({
+                        guildId: interaction.guildId,
+                    });
+                    let content = yield (ddfind === null || ddfind === void 0 ? void 0 : ddfind.command.map((data) => {
+                        if (data === "all") {
+                            return "جميع الاوامر";
+                        }
+                        else if (data === "one") {
+                            return "الاوامر الفرديه";
+                        }
+                        else if (data === 'two') {
+                            return "الاوامر الثنائيه";
+                        }
+                        else if (data === "three") {
+                            return "اوامر المجموعه";
+                        }
+                        else {
+                            return data;
+                        }
+                    }));
                     yield interaction.respond([
+                        {
+                            name: `الأوامر المُعطله: [${(content === null || content === void 0 ? void 0 : content.join(',')) || "لايوجد"}]`,
+                            value: ""
+                        },
                         {
                             name: "جميع الأوامر",
                             value: "all",
@@ -63,6 +88,10 @@ class CommandHandler extends Events_1.default {
                         {
                             name: "اوامر ثنائيه",
                             value: "two",
+                        },
+                        {
+                            name: "اوامر المجموعه",
+                            value: "three",
                         },
                         ...filtered.map((command) => ({
                             name: `${command.name}`,

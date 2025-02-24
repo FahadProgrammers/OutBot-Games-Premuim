@@ -18,11 +18,11 @@ const Category_1 = __importDefault(require("../../base/enums/Category"));
 class xo extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
-            name: "xo",
+            name: "اكس.او",
             description: "لعبه xo",
             category: Category_1.default.ثنائيه,
             cooldown: 3,
-            aliases: ["اكس-او"],
+            aliases: ["اكس-او", "XO", "xo"],
         });
     }
     execute(message) {

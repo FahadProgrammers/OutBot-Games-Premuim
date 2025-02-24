@@ -60,12 +60,19 @@ export default class رياضيات extends Command {
 
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
-    const filePath = path.resolve("assets", "BOTBG.png");
+    const filePath = path.resolve("src/utils/assets", "BOTBG.png");
+
     await loadImage(filePath)
       .then(async (image) => {
-        canvas.registerFont(path.resolve("assets", "imagefont.ttf"), {
-          family: "ImageFont",
-        });
+        canvas.registerFont(
+          path.resolve(
+            "src/utils/assets/Fonts",
+            "alfont_com_Wafeq-SemiBold.otf"
+          ),
+          {
+            family: "ImageFont",
+          }
+        );
 
         ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
         //Text
@@ -93,12 +100,7 @@ export default class رياضيات extends Command {
     const time_1 = Date.now();
     let status = false;
     try {
-      await Collecter(
-        messageFetch,
-        `${num1}${key.replace("*", "X")}${num2}`,
-        answer.toString(),
-        time_1
-      );
+      await Collecter(messageFetch, answer.toString(), time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

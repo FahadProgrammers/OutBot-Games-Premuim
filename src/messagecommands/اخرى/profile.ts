@@ -11,11 +11,11 @@ import profile from "../../utils/functions/Profile";
 export default class help extends Command {
   constructor(client: CustomClient) {
     super(client, {
-      name: "profile",
-      description: "إضهار المعلومات",
+      name: "الملف الشخصي",
+      description: "الملف الشخصي لك/لغيرك.",
       category: Category.ادمن,
       cooldown: 3,
-      aliases: ["بروفايل"],
+      aliases: ["بروفايل", "معلوماتي"],
     });
   }
   async execute(message: Message) {

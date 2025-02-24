@@ -6,15 +6,16 @@ import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import { AIDifficulty } from "discord-tictactoe/dist/src/config/types";
+import emoji from "../../utils/functions/emojis";
 
 export default class xo extends Command {
   constructor(client: CustomClient) {
     super(client, {
-      name: "xo",
+      name: "اكس.او",
       description: "لعبه xo",
       category: Category.ثنائيه,
       cooldown: 3,
-      aliases: ["اكس-او"],
+      aliases: ["اكس-او", "XO", "xo"],
     });
   }
 

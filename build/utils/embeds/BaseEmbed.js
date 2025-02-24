@@ -20,9 +20,15 @@ function BaseEmbed(GuildiObject, EmbedObject, embedType) {
             Embed.setImage(utils_1.default.Line);
         }
         if (embedType === "Base") {
+            if (EmbedObject.title) {
+                Embed
+                    .setTitle(`OutBot - Games ${title ? `| ${title}` : ""}`);
+            }
+            if (EmbedObject.des) {
+                Embed
+                    .setDescription(des ? des : "ERR");
+            }
             Embed
-                .setTitle(`OutBot - Games ${title ? `| ${title}` : ""}`)
-                .setDescription(des)
                 .setTimestamp()
                 .setFooter({
                 text: `OutBot Games - ${footer ? footer : "Bot"}`,
@@ -37,8 +43,11 @@ function BaseEmbed(GuildiObject, EmbedObject, embedType) {
             Embed.setThumbnail(emojiURL);
         }
         else if (embedType === "Success") {
+            if (EmbedObject.des) {
+                Embed
+                    .setDescription(des ? des : "ERR");
+            }
             Embed
-                .setDescription(des)
                 .setTimestamp()
                 .setFooter({
                 text: `OutBot Games - ${footer ? footer : "Game"}`,
@@ -53,8 +62,11 @@ function BaseEmbed(GuildiObject, EmbedObject, embedType) {
             Embed.setThumbnail(emojiURL);
         }
         else if (embedType === "Error") {
+            if (EmbedObject.des) {
+                Embed
+                    .setDescription(des ? des : "ERR");
+            }
             Embed
-                .setDescription(des)
                 .setTimestamp()
                 .setFooter({
                 text: `OutBot Games - ${footer ? footer : "Game"}`,

@@ -38,12 +38,19 @@ export default class رتب extends Command {
     const randomKeyWithrtb = randomKey.split("").reverse().join("");
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
-    const filePath = path.resolve("assets", "BOTBG.png");
+    const filePath = path.resolve("src/utils/assets", "BOTBG.png");
+
     await loadImage(filePath)
       .then(async (image) => {
-        canvas.registerFont(path.resolve("assets", "imagefont.ttf"), {
-          family: "ImageFont",
-        });
+        canvas.registerFont(
+          path.resolve(
+            "src/utils/assets/Fonts",
+            "alfont_com_Wafeq-SemiBold.otf"
+          ),
+          {
+            family: "ImageFont",
+          }
+        );
 
         ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
         //Text
@@ -72,7 +79,7 @@ export default class رتب extends Command {
     let status = false;
 
     try {
-      await Collecter(messageFetch, randomKeyWithrtb, randomKey, time_1);
+      await Collecter(messageFetch, randomKey, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

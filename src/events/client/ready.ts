@@ -4,7 +4,9 @@ import Event from "../../base/classes/Events";
 import Command from "../../base/classes/Command";
 import colors from "colors";
 import Category from "../../base/enums/Category";
+import * as dotenv from "dotenv";
 
+dotenv.config();
 export default class Ready extends Event {
   constructor(client: CustomClient) {
     super(client, {
@@ -34,14 +36,18 @@ export default class Ready extends Event {
     
     this.client.user?.setStatus("dnd");
     const clientId = this.client.devlopmentMode
-      ? this.client.config.devclientId
-      : this.client.config.clientId;
+      ? process.env.devclientId
+      : process.env.clientId;
     const guildId = this.client.devlopmentMode
-      ? this.client.config.devguildId
-      : this.client.config.guildId;
+      ? process.env.devguildId
+      : process.env.guildId;
+
+    if (!clientId || !guildId) {
+      throw new Error("Client ID or Guild ID is not defined");
+    }
     const token = this.client.devlopmentMode
-      ? this.client.config.devtoken
-      : this.client.config.token;
+      ? process.env.devtoken
+      : process.env.token;
 
     const commands = JSON.parse(
       JSON.stringify(this.GetJson(this.client.commands))
@@ -49,6 +55,9 @@ export default class Ready extends Event {
     const commandsDev = JSON.parse(
       JSON.stringify(this.GetJsonDev(this.client.commands))
     );
+    if (!token) {
+      throw new Error("Token is not defined");
+    }
     const rest = new REST().setToken(token);
 
     const setCommands: any = await rest.put(

@@ -18,6 +18,7 @@ const Category_1 = __importDefault(require("../../base/enums/Category"));
 const color_1 = __importDefault(require("../../utils/games/color"));
 const canvas_1 = require("canvas");
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class لون extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -30,36 +31,53 @@ class لون extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const args = message.content.split(" ").slice(1);
-            const randomKey = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
-            let randomValue = color_1.default[randomKey];
-            const randomKey2 = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
-            let randomValue2 = color_1.default[randomKey2];
-            while (randomValue === randomValue2) {
-                randomValue2 = color_1.default[randomKey2];
-            }
-            const randomKey3 = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
-            const canvas = (0, canvas_1.createCanvas)(114, 148);
-            const ctx = canvas.getContext("2d");
-            ctx.fillStyle = randomValue;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = randomValue2;
-            ctx.font = "25px Cairo";
-            ctx.shadowBlur = 21;
-            ctx.fillText(randomKey3, /* 40 */ 35, 75);
-            const attach = new discord_js_1.AttachmentBuilder(canvas.toBuffer("image/png"), {
-                name: "image.png",
-            });
-            const messageFetch = yield message.reply({
-                files: [attach],
-            });
-            const time_1 = new Date().getTime();
-            let status = false;
             try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomKey3, randomKey2, time_1);
+                const args = message.content.split(" ").slice(1);
+                const randomKey = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
+                let randomValue = color_1.default[randomKey];
+                const randomKey2 = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
+                let randomValue2 = color_1.default[randomKey2];
+                while (randomValue === randomValue2) {
+                    randomValue2 = color_1.default[randomKey2];
+                }
+                const randomKey3 = Object.keys(color_1.default)[Math.floor(Math.random() * Object.keys(color_1.default).length)];
+                const canvas = (0, canvas_1.createCanvas)(114, 148);
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = randomValue;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = randomValue2;
+                ctx.font = "25px Cairo";
+                ctx.shadowBlur = 21;
+                ctx.fillText(randomKey3, /* 40 */ 35, 75);
+                const attach = new discord_js_1.AttachmentBuilder(canvas.toBuffer("image/png"), {
+                    name: "image.png",
+                });
+                if (!message.guild)
+                    return;
+                const base = (0, BaseEmbed_1.default)(message.guild, {
+                    line: false,
+                    title: "خمن **لون النص**",
+                    footer: "تخمين اللون",
+                    fields: "تخمين اللون",
+                }, "Base");
+                if (base) {
+                    base.setImage("attachment://image.png");
+                    const messageFetch = yield message.reply({
+                        embeds: [base],
+                        files: [attach],
+                    });
+                    const time_1 = new Date().getTime();
+                    let status = false;
+                    try {
+                        yield (0, MessageCollecter_1.default)(messageFetch, randomKey2, time_1);
+                    }
+                    catch (err) {
+                        console.log("Error of Collecter!!");
+                    }
+                }
             }
             catch (err) {
-                console.log("Error of Collecter!!");
+                console.log(err, "In تخمين لون");
             }
         });
     }

@@ -21,6 +21,8 @@ const Category_1 = __importDefault(require("../../../base/enums/Category"));
 const utils_1 = __importDefault(require("../../../utils/utils"));
 const SchemaChannel_1 = __importDefault(require("../../../schema/SchemaChannel"));
 const BaseEmbed_1 = __importDefault(require("../../../utils/embeds/BaseEmbed"));
+const SchemaCommandControl_1 = __importDefault(require("../../../schema/SchemaCommandControl"));
+const SchemaServerUsedStats_1 = __importDefault(require("../../../schema/SchemaServerUsedStats"));
 class MessageCommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -31,7 +33,7 @@ class MessageCommandHandler extends Events_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d, _e, _f, _g;
             if (!message.content || typeof message.content !== "string") {
                 return;
             }
@@ -123,14 +125,52 @@ class MessageCommandHandler extends Events_1.default {
                                     });
                                 }
                                 timestamps.set(message.author.id, now);
-                                setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+                                setTimeout(function () {
+                                    timestamps.delete(message.author.id);
+                                }, cooldownAmount);
                                 try {
                                     const findRoleEvent = yield SchemaEvent_1.default.findOne({
                                         guildId: (_d = message.guild) === null || _d === void 0 ? void 0 : _d.id,
                                         channelId: message.channel.id,
                                     });
+                                    const findCommandDisable = yield SchemaCommandControl_1.default.findOne({
+                                        guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id
+                                    });
+                                    yield SchemaServerUsedStats_1.default.findOneAndUpdate({
+                                        guildId: (_f = message.guild) === null || _f === void 0 ? void 0 : _f.id,
+                                    }, {
+                                        $inc: { statsall: 1, [`commands.${command.name}`]: 1 }
+                                    }, {
+                                        upsert: true, new: true
+                                    });
+                                    if (findCommandDisable) {
+                                        if (findCommandDisable.command.includes('all')) {
+                                            return;
+                                        }
+                                        else if (findCommandDisable.command.includes('one')) {
+                                            if (command.category === Category_1.default.فرديه) {
+                                                return;
+                                            }
+                                        }
+                                        else if (findCommandDisable.command.includes('two')) {
+                                            if (command.category === Category_1.default.ثنائيه) {
+                                                return;
+                                            }
+                                        }
+                                        else if (findCommandDisable.command.includes('three')) {
+                                            if (command.category === Category_1.default.مجموعه) {
+                                                return;
+                                            }
+                                        }
+                                        else if (findCommandDisable.command.includes('all')) {
+                                            return;
+                                        }
+                                        else if (findCommandDisable.command.includes(command.name)) {
+                                            return;
+                                        }
+                                    }
                                     if (findRoleEvent) {
-                                        const findRole = (_e = message.member) === null || _e === void 0 ? void 0 : _e.roles.cache.some((role) => findRoleEvent === null || findRoleEvent === void 0 ? void 0 : findRoleEvent.roleId.includes(role.id));
+                                        const findRole = (_g = message.member) === null || _g === void 0 ? void 0 : _g.roles.cache.some((role) => findRoleEvent === null || findRoleEvent === void 0 ? void 0 : findRoleEvent.roleId.includes(role.id));
                                         if (!findRole) {
                                             if (findRoleEvent.command === "all") {
                                                 return;

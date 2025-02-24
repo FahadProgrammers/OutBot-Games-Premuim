@@ -40,27 +40,32 @@ export default class اسرع extends Command {
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
     const filePath = path.resolve("src/utils/assets", "BOTBG.png");
-    
+
     await loadImage(filePath)
       .then(async (image) => {
-        canvas.registerFont(path.resolve("src/utils/assets/Fonts", "BalooBhaijaan2-VariableFont_wght.ttf"), {
-          family: "ImageFontt",
-        });
-        
+        canvas.registerFont(
+          path.resolve(
+            "src/utils/assets/Fonts",
+            "alfont_com_Wafeq-SemiBold.otf"
+          ),
+          {
+            family: "ImageFont",
+          }
+        );
 
         ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
         //Text
-        ctx.font = "27px ImageFontt";
+        ctx.font = "27px ImageFont";
         ctx.fillStyle = "White";
-        ctx.fillText("✧ اكتب الكلمه قبل إنتهاء الوقت ✧", 165, 180);
+        ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
 
         //Time
-        ctx.font = "25px ImageFontt";
+        ctx.font = "25px ImageFont";
         ctx.fillStyle = "White";
         ctx.fillText("5", 60, 235);
 
         //Word
-        ctx.font = "25px ImageFontt";
+        ctx.font = "25px ImageFont";
         ctx.fillStyle = "White";
         ctx.fillText(randomword_2_2, 320, 115); // x 350
       })
@@ -75,7 +80,7 @@ export default class اسرع extends Command {
     let status = false;
 
     try {
-      await Collecter(messageFetch, randomword_2_2, randomword_2_2, time_1);
+      await Collecter(messageFetch, randomword_2_2, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

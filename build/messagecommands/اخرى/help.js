@@ -16,14 +16,15 @@ const discord_js_1 = require("discord.js");
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
+const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
 class help extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
-            name: "help",
-            description: "طلب مساعده",
+            name: "الاوامر",
+            description: "معرفة الاوامر المخصصه.",
             category: Category_1.default.ادمن,
             cooldown: 3,
-            aliases: ["العاب", "مساعده", "مساعدة"],
+            aliases: ["العاب", "مساعده", "مساعدة", "help", "الأوامر"],
         });
     }
     execute(message) {
@@ -36,11 +37,11 @@ class help extends MessageCreate_1.default {
 
 <:premuim:1341414399696703549>  يمكنك **الاختيار** من القائمه أدناه للحصول على **المطلوب**.
 
-1 - <:0_:1341414321955278868> الالعاب الفرديه
-2 - <:0_:1341414321955278868> الالعاب الثنائيه
-3 - <:0_:1341414321955278868> الالعاب الجماعيه
-4 - <:0_:1341414321955278868> اوامر السلاش
-5 - <:all_2:1341693257062813746> الكل
+1 - ${emojis_1.default.esar_arrow} الالعاب الفرديه
+2 - ${emojis_1.default.esar_arrow} الالعاب الثنائيه
+3 - ${emojis_1.default.esar_arrow} الالعاب الجماعيه
+4 - ${emojis_1.default.esar_arrow} اوامر السلاش
+5 - ${emojis_1.default.all} الكل
 
 `,
                     line: true,

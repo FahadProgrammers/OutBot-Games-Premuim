@@ -10,6 +10,7 @@ import mainembed from "../../utils/embeds/mainEmbed";
 import schema_2 from "../../schema/SchemaPrefix";
 import prefix from "../../schema/SchemaPrefix";
 import Category from "../../base/enums/Category";
+import SchemaControl from "../../schema/SchemaCommandControl";
 
 export default class CommandHandler extends Event {
   constructor(client: CustomClient) {
@@ -49,8 +50,27 @@ export default class CommandHandler extends Event {
           if (!aExact && bExact) return 1;
           return a.name.localeCompare(b.name); // ترتيب أبجدي لبقية العناصر
         });
-                        
+               const ddfind = await SchemaControl.findOne({
+                 guildId: interaction.guildId,
+               });      
+               let content = await ddfind?.command.map((data) => {
+                if(data === "all") {
+                  return "جميع الاوامر"
+                } else if(data === "one") {
+                  return "الاوامر الفرديه"
+                } else if(data === 'two') {
+                  return "الاوامر الثنائيه"
+                } else  if(data === "three") {
+                  return "اوامر المجموعه"
+                } else {
+                  return data;
+                }
+              });       
     await interaction.respond([
+      {
+        name: `الأوامر المُعطله: [${content?.join(',') || "لايوجد"}]`,
+        value: ""
+      },
           {
             name: "جميع الأوامر",
             value: "all",
@@ -62,6 +82,10 @@ export default class CommandHandler extends Event {
           {
             name: "اوامر ثنائيه",
             value: "two",
+          },
+          {
+            name: "اوامر المجموعه",
+            value: "three",
           },
           ...filtered.map((command) => ({
             name: `${command.name}`,

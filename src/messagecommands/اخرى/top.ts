@@ -8,38 +8,57 @@ import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import mainembed from "../../utils/embeds/mainEmbed";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class top extends Command {
   constructor(client: CustomClient) {
     super(client, {
-      name: "top",
+      name: "لوحة النقاط",
       description: "ترتيب لوحة النقاط.",
       category: Category.ادمن,
       cooldown: 3,
-      aliases: ["لوحة النقاط", "توب"],
+      aliases: ["النقاط", "توب", "top"],
     });
   }
   async execute(message: Message) {
-    const embed = mainembed(
-      `<:Arrow1:1299711671052402718> لوحة النقاط
-        
-اختر من الخيارات ادناه ماتريد
-1. إضهار التوب الخاص بلسيرفر
-2. إضهار اعلى اشخاص يملكون نقاطا `,
-      "System",
-      "System"
+    try {
+      if(!message.guild) {
+        return;
+      }
+
+      const embed = BaseEmbed(
+        message.guild,
+        {
+          title: "لوحة التوب",
+          des: `<:number1:1343223920790212638> - **إضهار التوب **الخاص بلسيرفر
+<:number2:1343223935415746621> - **إضهار اعلى اشخاص **يملكون نقاطا 
+<:number3:1343223947705192468> - **إضهار التوب الخاص ب أكثر **سيرفر اُستخدم فيه البوت`,
+line: false,
+footer: "التوب",
+fields: "التوب"
+        },
+      "Base"
     );
+    if(embed) {
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setEmoji("<:one:1309821400424644649>")
+        .setEmoji("<:number1:1343223920790212638>")
         .setCustomId(`topserver_${message.guild?.id}`)
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
-        .setEmoji("<:two:1309821436503920691>")
+        .setEmoji("<:number2:1343223935415746621>")
         .setCustomId(`pall_${message.guild?.id}`)
+        .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+        .setEmoji("<:number3:1343223947705192468>")
+        .setCustomId(`serverused_${message.guild?.id}`)
         .setStyle(ButtonStyle.Secondary)
     );
     message.reply({ embeds: [embed], components: [row] });
+  } 
+} catch(err) {
+    console.log(err);
   }
+}
 }

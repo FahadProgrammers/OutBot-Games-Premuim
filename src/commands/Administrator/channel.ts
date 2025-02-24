@@ -90,7 +90,7 @@ export default class Test extends Command {
         interaction.guild,
         {
           title: "deletechannel",
-          des: `${emoji.true} تم حذف القناه ( \`${Targetchannel} \` )`,
+          des: `${emoji.true} تم حذف القناه <#${Targetchannel}>`,
           line: true,
           footer: `حذف قناه`,
           fields: `حذف قناه`,
@@ -136,7 +136,7 @@ export default class Test extends Command {
       `Full Channels`
     );
     if (schema_2) {
-      if (schema_2?.channelId.length === 2) {
+      if (schema_2?.channelId.length === 5) {
         await interaction.editReply({
           embeds: [emb2Full],
         });
@@ -149,6 +149,7 @@ export default class Test extends Command {
         return;
       }
       schema_2?.channelId.push(channel.id);
+      schema_2.dateend = new Date();
       await schema_2?.save();
       await interaction.editReply({
         embeds: [emb],
@@ -157,12 +158,17 @@ export default class Test extends Command {
       new schema_1({
         guildId: interaction.guild.id,
         channelId: [],
+        date: new Date(),
+        dateend: new Date()
       }).save();
 
       const schema_3 = await schema_1.findOne({
         guildId: interaction.guild.id,
       });
       schema_3?.channelId.push(channel.id);
+      if (schema_3) {
+        schema_3.dateend = new Date();
+      }
       await schema_3?.save();
       await interaction.editReply({
         embeds: [emb],
@@ -176,9 +182,10 @@ export default class Test extends Command {
           .setStyle(ButtonStyle.Secondary)
       );
     const message = await channel.send({
-      content: `🎉 **تم بإذن الله تفعيل البوت في هاذي القناه.**
-**سيتم تنزيل رساله للتحديثات الجديده ل اغلاقها**
-<:Arrow1:1299711671052402718> /update status status: off`,
+      content: `
+      <:confetti_2:1343040164183674900>  **تم بإذن الله تفعيل البوت في هاذي القناه.**
+<:1336961650103947294:1343044829055160423>  **سيتم تنزيل رساله للتحديثات الجديده ل اغلاقها أستخدم:**
+${emoji.emen_arrow} **/**update status status: off`,
       components: [ActionRowBuilderPrefix],
     });
     if (message.guild.members.me?.permissions.has("ManageGuild")) {

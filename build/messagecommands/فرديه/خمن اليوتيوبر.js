@@ -44,7 +44,7 @@ class جمع extends MessageCreate_1.default {
             const time_1 = new Date().getTime();
             let status = false;
             try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomKey, randomValue, time_1);
+                yield (0, MessageCollecter_1.default)(messageFetch, randomValue, time_1);
             }
             catch (err) {
                 console.log("Error of Collecter!!");

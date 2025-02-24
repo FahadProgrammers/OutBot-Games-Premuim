@@ -9,6 +9,7 @@ import Event from "../../../base/classes/Events";
 import mainembedWithUser from "../../../utils/embeds/mainembedWithUser";
 import Category from "../../../base/enums/Category";
 import utils from "../../../utils/utils";
+import emoji from "../../../utils/functions/emojis";
 
 export default class CommandHandler extends Event {
   constructor(client: CustomClient) {
@@ -38,23 +39,21 @@ export default class CommandHandler extends Event {
       let hasCommands = false;
 
       if(value !== "ادمن" && value !== "all") {
-      commands.forEach((command) => {
-        
-        if (command.category === value) {
-      
-          if (
-            interaction.guild?.id === "711370689126596618" && //Drb7h ServerId
-            command.name === "خمن اليوتيوبر"
-          ) {
+        commands.forEach((command) => {
+          if (interaction.guild?.id === "711370689126596618" && command.name === "خمن اليوتيوبر") {
             return;
           }
+        
+          const isArabic = /[^\u0000-\u007F]/.test(command.name.charAt(0));
+        
           embed.addFields({
-            name: "<:1323739617790263326:1341704260483551323> "+command.name || "No Name",
-            value: "<:file1:1341704211972231249> "+`${command.description} \n اختصارات : ${command.aliases.join(",")}`,
+            name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
+            value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${isArabic ? emoji.close : emoji.open} **${command.aliases.join(",") || "لايوجد"}** ${isArabic ? emoji.open : emoji.close}`,
           });
+        
           hasCommands = true;
-        }
-      });
+        });
+        
     } else if(value !== "all") {
       commands2.forEach((command) => {
         if (command.category === value) {
@@ -90,11 +89,15 @@ export default class CommandHandler extends Event {
             return;
           }
         
-          currentFields.push({
-            name: "<:1323739617790263326:1341704260483551323> "+command.name || "No Name",
-            value: "<:file1:1341704211972231249> "+`${command.description} \n اختصارات : ${command.aliases.join(",")}`,
+          const isArabic = /[^\u0000-\u007F]/.test(command.name.charAt(0));
+        
+          embed.addFields({
+            name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
+            value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${isArabic ? emoji.open : emoji.close} **${command.aliases.join(",") || "لايوجد"}** ${isArabic ? emoji.close : emoji.open}`,
           });
         
+          hasCommands = true;
+                
           if (currentFields.length === 25) {
             embeds.push({ fields: currentFields });
             currentFields = [];

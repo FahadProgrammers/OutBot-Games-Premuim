@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,14 +47,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const colors_1 = __importDefault(require("colors"));
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
 class slash {
     load(client) {
         return __awaiter(this, void 0, void 0, function* () {
-            const clientId = client.devlopmentMode ? client.config.devclientId : client.config.clientId;
-            const guildId = client.devlopmentMode ? client.config.devguildId : client.config.guildId;
-            const token = client.devlopmentMode ? client.config.devtoken : client.config.token;
+            const clientId = client.devlopmentMode ? process.env.devclientId : process.env.clientId;
+            const guildId = client.devlopmentMode ? process.env.devguildId : process.env.guildId;
+            const token = client.devlopmentMode ? process.env.devtoken : process.env.token;
             const commands = this.GetJson(client.commands);
+            if (!token) {
+                throw new Error("Token is undefined");
+            }
             const rest = new discord_js_1.REST().setToken(token);
+            if (!clientId || !guildId) {
+                throw new Error("Client ID or Guild ID is undefined");
+            }
             const setCommands = yield rest.put(discord_js_1.Routes.applicationGuildCommands(clientId, guildId), {
                 body: commands
             });

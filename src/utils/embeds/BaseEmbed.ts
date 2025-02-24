@@ -5,7 +5,7 @@ import emoji from "../functions/emojis";
 
 interface EmbedObject {
 title?: string;
-des: string;
+des?: string;
 line: boolean;
 footer?: string | null;
 fields?: string | null;
@@ -24,10 +24,16 @@ export default function BaseEmbed(GuildiObject: Guild, EmbedObject: EmbedObject,
         Embed.setImage(utils.Line)
         } 
     if(embedType === "Base") {
-        Embed
+        if(EmbedObject.title) {
+            Embed
 .setTitle(`OutBot - Games ${title ? `| ${title}` : ""}`)
-.setDescription(des)
-.setTimestamp()
+        }
+        if(EmbedObject.des) {
+Embed
+.setDescription(des ? des : "ERR")
+}
+ Embed
+ .setTimestamp()
 .setFooter({
     text: `OutBot Games - ${footer ? footer : "Bot"}`,
     iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
@@ -40,8 +46,11 @@ export default function BaseEmbed(GuildiObject: Guild, EmbedObject: EmbedObject,
 const emojiURL = emoji.BaseURL;
 Embed.setThumbnail(emojiURL);
     } else if(embedType === "Success") {
+        if(EmbedObject.des) {
+            Embed
+            .setDescription(des ? des : "ERR")
+                }
         Embed
-.setDescription(des)
 .setTimestamp()
 .setFooter({
     text: `OutBot Games - ${footer ? footer : "Game"}`,
@@ -55,8 +64,11 @@ Embed.setThumbnail(emojiURL);
 const emojiURL = emoji.trueURL;
 Embed.setThumbnail(emojiURL);
     } else if(embedType === "Error") {
+        if(EmbedObject.des) {
+            Embed
+            .setDescription(des ? des : "ERR")
+                }
         Embed
-.setDescription(des)
 .setTimestamp()
 .setFooter({
     text: `OutBot Games - ${footer ? footer : "Game"}`,

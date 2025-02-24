@@ -17,6 +17,7 @@ const Events_1 = __importDefault(require("../../../base/classes/Events"));
 const mainembedWithUser_1 = __importDefault(require("../../../utils/embeds/mainembedWithUser"));
 const Category_1 = __importDefault(require("../../../base/enums/Category"));
 const utils_1 = __importDefault(require("../../../utils/utils"));
+const emojis_1 = __importDefault(require("../../../utils/functions/emojis"));
 class CommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -44,17 +45,15 @@ class CommandHandler extends Events_1.default {
                 if (value !== "ادمن" && value !== "all") {
                     commands.forEach((command) => {
                         var _a;
-                        if (command.category === value) {
-                            if (((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) === "711370689126596618" && //Drb7h ServerId
-                                command.name === "خمن اليوتيوبر") {
-                                return;
-                            }
-                            embed.addFields({
-                                name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
-                                value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${command.aliases.join(",")}`,
-                            });
-                            hasCommands = true;
+                        if (((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) === "711370689126596618" && command.name === "خمن اليوتيوبر") {
+                            return;
                         }
+                        const isArabic = /[^\u0000-\u007F]/.test(command.name.charAt(0));
+                        embed.addFields({
+                            name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
+                            value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${isArabic ? emojis_1.default.close : emojis_1.default.open} **${command.aliases.join(",") || "لايوجد"}** ${isArabic ? emojis_1.default.open : emojis_1.default.close}`,
+                        });
+                        hasCommands = true;
                     });
                 }
                 else if (value !== "all") {
@@ -89,10 +88,12 @@ class CommandHandler extends Events_1.default {
                             if (((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) === "711370689126596618" && command.name === "خمن اليوتيوبر") {
                                 return;
                             }
-                            currentFields.push({
+                            const isArabic = /[^\u0000-\u007F]/.test(command.name.charAt(0));
+                            embed.addFields({
                                 name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
-                                value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${command.aliases.join(",")}`,
+                                value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${isArabic ? emojis_1.default.open : emojis_1.default.close} **${command.aliases.join(",") || "لايوجد"}** ${isArabic ? emojis_1.default.close : emojis_1.default.open}`,
                             });
+                            hasCommands = true;
                             if (currentFields.length === 25) {
                                 embeds.push({ fields: currentFields });
                                 currentFields = [];

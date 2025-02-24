@@ -195,6 +195,20 @@ class Test extends Command_1.default {
             }
             else if (subCommand === "control") {
                 const command = interaction.options.getString('command-select');
+                if (command === "") {
+                    const BaseEmbed1 = (0, BaseEmbed_1.default)(interaction.guild, {
+                        title: "مهلا",
+                        des: "هاذا الأمر غير مسموح لك بإستخدامه!",
+                        line: true,
+                        footer: "Error.",
+                        fields: "Error."
+                    }, "Error");
+                    if (BaseEmbed1) {
+                        return interaction.editReply({
+                            embeds: [BaseEmbed1]
+                        });
+                    }
+                }
                 const disabled = interaction.options.getBoolean('disabled');
                 let find = yield SchemaCommandControl_1.default.findOne({
                     guildId: interaction.guildId,
@@ -225,19 +239,39 @@ class Test extends Command_1.default {
                         else {
                             new SchemaCommandControl_1.default({
                                 guildId: interaction.guildId,
-                                command: []
+                                command: [command]
                             }).save();
                         }
                     }
-                    const BaseEmbed11 = (0, BaseEmbed_1.default)(interaction.guild, {
+                    const ddfind = yield SchemaCommandControl_1.default.findOne({
+                        guildId: interaction.guildId,
+                    });
+                    let content = yield (ddfind === null || ddfind === void 0 ? void 0 : ddfind.command.map((data) => {
+                        if (data === "all") {
+                            return "جميع الاوامر";
+                        }
+                        else if (data === "one") {
+                            return "الاوامر الفرديه";
+                        }
+                        else if (data === 'two') {
+                            return "الاوامر الثنائيه";
+                        }
+                        else if (data === "three") {
+                            return "اوامر المجموعه";
+                        }
+                        else {
+                            return data;
+                        }
+                    }));
+                    const BaseEmbed11 = yield (0, BaseEmbed_1.default)(interaction.guild, {
                         title: "تم بنجاح!",
-                        des: `${emojis_1.default.true} | **تم بنجاح **تعطيل الأمر`,
+                        des: `${emojis_1.default.true} | **تم بنجاح **تعطيل الأمر\n\nالأوامر المُعطله: ${emojis_1.default.close} **${content === null || content === void 0 ? void 0 : content.join(",")}** ${emojis_1.default.open}`,
                         line: true,
-                        footer: "Error.",
-                        fields: "Error."
-                    }, "Base");
+                        footer: "Success.",
+                        fields: "Success."
+                    }, "Success");
                     if (BaseEmbed11) {
-                        return interaction.editReply({
+                        return yield interaction.editReply({
                             embeds: [BaseEmbed11]
                         });
                     }
@@ -258,14 +292,15 @@ class Test extends Command_1.default {
                         }
                     }
                     else {
-                        yield find.deleteOne();
+                        find.command = find.command.filter((c) => c !== command);
+                        yield find.save();
                         const BaseEmbed11 = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "حدث خطأ!",
+                            title: "تم بنجاح!",
                             des: `${emojis_1.default.true} | **تم بنجاح إعادة **تشغيل الأمر`,
                             line: true,
-                            footer: "Error.",
-                            fields: "Error."
-                        }, "Base");
+                            footer: "Success.",
+                            fields: "Success."
+                        }, "Success");
                         if (BaseEmbed11) {
                             return interaction.editReply({
                                 embeds: [BaseEmbed11]

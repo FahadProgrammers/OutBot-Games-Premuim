@@ -1,275 +1,390 @@
-import { join, resolve } from 'path';
-import { createCanvas, loadImage, registerFont, Canvas, Image } from 'canvas';
-import { EmbedBuilder, Message, TextChannel } from 'discord.js';
-import { createRouletteGifImage } from 'roulette-image';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, Collector, ComponentType, Message, TextChannel, User } from "discord.js";
+import { createRouletteGifImage, shuffleArray } from "roulette-image";
+import rouletteGame from "../../schema/Roulette/SchemaRoulette";
+import roulettePoint from "../../schema/Roulette/SchemaRoulettePoints";
 
-
-const loadImageWithFallback = async (url: string): Promise<Image> => {
-  try {
-    return await loadImage(url);
-  } catch (error) {
-    console.error(`Failed to load image from ${url}, using fallback image.`);
-    return await loadImage("https://cdn.discordapp.com/attachments/1225977975644618872/1316381967897591838/fallback.png?ex=675ad7be&is=6759863e&hm=7b0786116a91b4a13aaa977af0c1c71c45223da77a77a1b57174b31cb9bd793c&");
-  }
+type Button = {
+  custom_id: string;
+  disabled?: boolean;
+  label?: string;
+  [key: string]: any; // For additional button properties
 };
 
-interface SpinWheelData {
-  label: string;
-  winner?: boolean;
+type Component = {
+  components: Button[];
+  [key: string]: any; // For additional component properties
+};
+
+type Messagee = {
+  components: Component[];
+};
+
+interface dataInterface {
+  user: User,
+  number: Number,
+  username: String,
+  userId: String,
+  color: String,
+  image: String
+};
+
+export const disabledMultipleButtons = async (
+  mm: Messagee,
+  specific_custom_id?: string,
+  username?: string,
+  is_leave: boolean = false
+): Promise<Component[]> => {
+  mm.components.forEach((a, i) => {
+    a.components.forEach((b, e) => {
+      if (
+        specific_custom_id &&
+        mm.components[i].components[e].custom_id.includes(specific_custom_id)
+      ) {
+        mm.components[i].components[e].disabled = is_leave ? false : true;
+        if (username) {
+          mm.components[i].components[e].label = is_leave
+            ? `${+mm.components[i].components[e].custom_id.split("_")[1] + 1}`
+            : username;
+        }
+      } else if (!specific_custom_id) {
+        mm.components[i].components[e].disabled = true;
+      }
+    });
+  });
+
+  return mm.components;
 }
 
-export const createSpinWheel = async (
-  data: SpinWheelData[], 
-  returnCanvas: boolean
-): Promise<Buffer | Canvas> => {
-  const canvas = createCanvas(1080, 1080);
-  const ctx = canvas.getContext('2d') as unknown as CanvasRenderingContext2D;
 
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const outerRadius = 450;
-  const innerRadius = 100;
-
-  const colors: [string, string][] = [
-    ['#FF5F6D', '#FFC371'], // Sunset
-    ['#24C6DC', '#514A9D'], // Ocean Blue
-    ['#DA22FF', '#9733EE'], // Purple
-    ['#F7971E', '#FFD200'], // Orange
-    ['#56CCF2', '#2F80ED'], // Blue
-    ['#43C6AC', '#F8FFAE'], // Green
-    ['#EECDA3', '#EF629F'], // Pink
-    ['#7F00FF', '#E100FF'], // Violet
-    ['#FF512F', '#DD2476'], // Red
-    ['#1FA2FF', '#12D8FA'], // Sky Blue
-  ];
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, outerRadius + 20, 0, 2 * Math.PI, false);
-  ctx.fillStyle = '#333333';
-  ctx.fill();
-
-  const totalSegments = data.length;
-  const angleStep = (2 * Math.PI) / totalSegments;
-
-  for (let i = 0; i < totalSegments; i++) {
-    const startAngle = i * angleStep - Math.PI / 2;
-    const endAngle = startAngle + angleStep;
-    const color = colors[i % colors.length];
-
-    const gradient = ctx.createLinearGradient(
-      centerX + Math.cos(startAngle) * innerRadius,
-      centerY + Math.sin(startAngle) * innerRadius,
-      centerX + Math.cos(endAngle) * outerRadius,
-      centerY + Math.sin(endAngle) * outerRadius
-    );
-    gradient.addColorStop(0, color[0]);
-    gradient.addColorStop(1, color[1]);
-
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle, false);
-    ctx.closePath();
-    ctx.fillStyle = gradient;
-    ctx.fill();
-
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 4;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(startAngle + angleStep / 2);
-
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 32px PoppinsBold';
-    const label = data[i].label;
-    const maxTextWidth = outerRadius - innerRadius - 40;
-    wrapText(ctx, label, (outerRadius + innerRadius) / 2, 0, maxTextWidth, 36);
-
-    ctx.restore();
-  }
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI, false);
-  ctx.fillStyle = '#222222';
-  ctx.fill();
-
-  const glossGradient = ctx.createRadialGradient(
-    centerX,
-    centerY,
-    innerRadius,
-    centerX,
-    centerY,
-    outerRadius
-  );
-  glossGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
-  glossGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI, false);
-  ctx.fillStyle = glossGradient;
-  ctx.fill();
-
-  if (returnCanvas) return canvas;
-
-  return canvas.toBuffer('image/png');
-};
-
-export const createWheel = async (
-  data: SpinWheelData[], 
-  userAvatar: string
-): Promise<Buffer> => {
-  const winnerIndex = data.findIndex((item) => item.winner);
-
-  const rotatedData = [...data.slice(winnerIndex), ...data.slice(0, winnerIndex)];
-
-  const spinwheel = await createSpinWheel(rotatedData, true) as Canvas;
-  const canvas = createCanvas(1080, 1080);
-  const ctx = canvas.getContext('2d');
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const outerRadius = 450;
-  const innerRadius = 100;
-
-  ctx.save();
-  ctx.translate(centerX, centerY);
-  const angleStep = (2 * Math.PI) / data.length;
-  ctx.rotate(-angleStep / 2);
-  ctx.drawImage(spinwheel, -centerX, -centerY);
-  ctx.restore();
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, outerRadius + 20, 0, 2 * Math.PI, false);
-  ctx.lineWidth = 10;
-  ctx.strokeStyle = '#FFD700';
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-  ctx.shadowBlur = 10;
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, innerRadius - 10, 0, 2 * Math.PI, false);
-  ctx.lineWidth = 5;
-  ctx.strokeStyle = '#FFD700';
-  ctx.stroke();
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, innerRadius - 15, 0, 2 * Math.PI, false);
-  ctx.fillStyle = '#333333';
-  ctx.fill();
-  ctx.clip();
-
-  const userImage = await loadImageWithFallback(userAvatar);
-  ctx.drawImage(
-    userImage,
-    centerX - (innerRadius - 15),
-    centerY - (innerRadius - 15),
-    (innerRadius - 15) * 2,
-    (innerRadius - 15) * 2
-  );
-  ctx.restore();
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, innerRadius - 15, 0, 2 * Math.PI, false);
-  ctx.lineWidth = 5;
-  ctx.strokeStyle = '#FFD700';
-  ctx.stroke();
-
-  ctx.shadowColor = 'transparent';
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
-
-  const pointer = await loadImage("https://cdn.discordapp.com/attachments/1225977975644618872/1316381574761287740/pointer.png?ex=675ad760&is=675985e0&hm=a113ae11a859ce86e1aba2170c813487ccc2c057c0521041468af2ab35b9ab4c&");
-
-  ctx.save();
-  ctx.translate(centerX, centerY - outerRadius - 40);
-  ctx.drawImage(pointer, -40, -40, 80, 80);
-  ctx.restore();
-
-  return canvas.toBuffer('image/png');
-};
-
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number
-): void {
-  const words = text.split(' ');
-  let line = '';
-  let lines: string[] = [];
-
-  for (let n = 0; n < words.length; n++) {
-    const testLine = line + words[n] + ' ';
-    const metrics = ctx.measureText(testLine);
-    const testWidth = metrics.width;
-
-    if (testWidth > maxWidth && n > 0) {
-      lines.push(line);
-      line = words[n] + ' ';
-    } else {
-      line = testLine;
+function getMultipleButtons(all_buttons: Button[]): Component[] {
+  let components: Component[] = [];
+  for (let i = 0; i < all_buttons.length; i += 5) {
+    let component: Component = { components: [], type: 1 };
+    for (let btn of all_buttons.slice(i, i + 5)) {
+      component.components.push(btn);
     }
+    components.push(component);
   }
-  lines.push(line);
-
-  const totalHeight = lines.length * lineHeight;
-  const startY = y - totalHeight / 2 + lineHeight / 2;
-
-  for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i], x, startY + i * lineHeight);
-  }
+  return components;
 }
 
-export const startRouletteGame = async (message: Message) => {
-  try {
-    console.log("Starting roulette game...");
+interface Player {
+  security?: true;
+  winner?: boolean; 
+  user: any; 
+  username: string;
+  userId: string;
+  number: number;
+  image: string 
+};
 
+interface id {
+  guildId: string;
+  channelId: string; 
+  number: number;
+  msgId: string;
+}
+
+async function sendGameMessage(
+  message: Message, // Or use Message if you're not using slash commands
+  winner: dataInterface,
+  players: Player[],
+  id: id,
+) {
+  // Generate buttons for players
+  const buttons = players
+    .slice(0, -1) // Remove the last player
+    .slice(0, 24) // Discord limit: Max 25 buttons per action row
+    .map((player) =>
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Secondary) // Secondary button style
+        .setLabel(`${player.number + 1}. ${player.username}`)
+        .setEmoji("<:emoji_33:1327724772167127201>")
+        .setCustomId(`roulette_kick_${player.userId}_${message.guildId}_${id}_${player.number}`)
+    );
+
+  // Add the "Withdraw" button
+  buttons.push(
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Danger) // Danger button style
+      .setLabel("انسحاب") // Arabic for "Withdraw"
+      .setEmoji("<:emoji_30:1327724585562407024>>")
+      .setCustomId(`roulette_withdraw_${winner.userId}_${message.guild?.id}_${id}_${winner?.number}`)
+  );
+
+  const buttonss = [];
+  buttonss.push(
+    new ButtonBuilder()
+                .setEmoji("<:emoji_24:1327724457732603945>")
+                .setLabel("إلغاء جوله روليت")
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId(`roulette_cancel_${winner.user.id}_${message.guild?.id}_${id}_${winner?.number}`),              
+  )
+
+  // Group buttons into ActionRows (max 5 buttons per row)
+
+  const rows2: ActionRowBuilder<ButtonBuilder>[] = [];
+  for (let i = 0; i < buttonss.length; i += 5) {
+    rows2.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttonss.slice(i, i + 5)));
+  }
+  // Send the message
+  const gameMessage = await (message.channel as TextChannel).send({
+    content: `<@${winner.userId}> لديك **15 ثانية** لإختيار لاعب لطرده`, // Arabic: "You have 30 seconds to select a player to kick"
+    components: rows2,
+  });
+
+  setTimeout(function() {
+    buttons.push(
+      new ButtonBuilder()
+                  .setEmoji("<:emoji_24:1327724457732603945>")
+                  .setLabel("إلغاء جوله روليت")
+                  .setStyle(ButtonStyle.Secondary)
+                  .setCustomId(`roulette_cancel_${winner.user.id}_${message.guild?.id}_${id}_${winner?.number}`),              
+    )
+    const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+    for (let i = 0; i < buttons.length; i += 5) {
+      rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttons.slice(i, i + 5)));
+    }
+  
+    gameMessage.edit({
+      content: `<@${winner.userId}> لديك **15 ثانية** لإختيار لاعب لطرده`, // Arabic: "You have 30 seconds to select a player to kick"
+      components: rows
+    })
+  }, 3000);
+  const msgcoll = gameMessage.createMessageComponentCollector({
+    time: 15000, // الوقت المسموح لجمع التفاعلات
+    filter: f => !f.user.bot, // استبعاد البوتات
+    componentType: ComponentType.Button, // تحديد أن التفاعل المطلوب هو ضغط زر
+  });
+  
+  msgcoll.on("end", async (collected) => {
+    if (collected.size === 0) {
+      const components = gameMessage.components.map((row) => {
+            const actionRow = new ActionRowBuilder<ButtonBuilder>();
+      
+                row.components.forEach((component) => {
+                  if (component.type === ComponentType.Button) {
+                    const buttonData = {
+                      ...component,
+                      url: component.url ?? undefined, // معالجة الحقل `url`
+                      label: component.label ?? "زر بدون عنوان", // توفير نص افتراضي
+                      style: component.data.style ?? ButtonStyle.Primary,
+                      custom_id:
+                        component.customId ?? `${message.author.id}_${winner.number}`,
+                      emoji: component.emoji ?? { name: ":fire:" },
+                      disabled: true
+                    };
+      
+                    if (!buttonData.label && !(component.data as any).emoji) {
+                      buttonData.label = "زر افتراضي"; // تعيين نص افتراضي إذا لم يكن هناك label أو emoji
+                    }
+                    actionRow.addComponents(new ButtonBuilder(buttonData));
+                  }
+                });
+      
+                return actionRow;
+              }) as ActionRowBuilder<ButtonBuilder>[];
+      
+      
+      
+                await gameMessage.edit({
+                  components: components.map((row) => row.toJSON()),
+              });
+
+       gameMessage.reply({
+        content: `<:emoji_29:1327724572635697345> | لم يتم التفاعل مع الزر! لذا تم طرد <@${winner.userId}>`
+      });
+        const findRoulette = await rouletteGame.findOne({
+                guildId: message.guild?.id,
+                channelId: message.channel?.id,
+                msgId: id,
+              });
+
+      const find = findRoulette?.players.find(
+        (p) => p.number === Number(winner.number)
+      );
+      if (find && findRoulette) {
+        findRoulette.players = findRoulette.players.filter(
+          (x) => x.number != Number(winner.number)
+        );
+        await findRoulette.save();
+      }
+    
+      await startRouletteGame(message, findRoulette?.players, message.client, id)
+    }
+  });
+  
+
+  return gameMessage;
+}
+
+
+
+export const startRouletteGame = async (message: Message, users: any, client: Client, id: any) => {
+  try {
     // Define the available colors for the roulette wheel
-    const colorsGradient = ['#32517f', '#4876a3', '#5d8ec7', '#74a6eb', '#8ac0ff'];
+    const colorsGradient = [
+      "#32517f",
+      "#4876a3",
+      "#5d8ec7",
+      "#74a6eb",
+      "#8ac0ff",
+    ];
 
     // Example options for players, you can adjust this to fetch users dynamically
-    const options = [{
-      user: 'd',  // Replace with actual user information
-      label: "._f99",
-      color: colorsGradient[Math.floor(Math.random() * colorsGradient.length)],  // Random color
-    }];
-    
-    // Randomize winner selection based on available options
-    const winnerIndex = Math.floor(Math.random() * options.length);  // Random index for winner
-    const winnerOption = options[winnerIndex];
-
-    console.log("Winner selected:", winnerOption);
-
-    // Generate the roulette wheel image
-
+    const options = users.map((data: any) => ({
+      user: data.user, // Replace with actual user information
+      label: data.username,
+      color: colorsGradient[Math.floor(Math.random() * colorsGradient.length)], // Random color
+    }));
     
 
-    const sectors = [
-      { number: 0, username: 'User1', color: '#FF0000', avatarURL: 'https://cdn.discordapp.com/attachments/1299471640698028073/1316383032357158973/wheel.gif?ex=675ad8bc&is=6759873c&hm=9b688156672a218ca767f94fa60b9108d63e27b93a904d97e147a73ff66510ec&' },
-      { number: 1, username: 'User2', color: '#00FF00', avatarURL: 'https://cdn.discordapp.com/attachments/1299471640698028073/1316383032357158973/wheel.gif?ex=675ad8bc&is=6759873c&hm=9b688156672a218ca767f94fa60b9108d63e27b93a904d97e147a73ff66510ec&' },
-      // Add more sectors...
-    ];
+    const sectors = users.map((data: dataInterface) => ({
+      user: data.user,
+      number: data.number,
+      username: data.username,
+      userId: data.userId,
+      color: colorsGradient[Math.floor(Math.random() * colorsGradient.length)], // Random color
+      image: data.image,
+    }));
+
+    if (message.channel instanceof TextChannel) {
+      let players = shuffleArray(
+        sectors.sort((a: any, b: any) => a.number - b.number, 0)
+      );
+      let winnerr = players[players.length - 1];
+
+      // let bufferRouletteImage = await createRouletteGifImage(players);
+      // await message.channel.send({
+      //   content: `**${winner.number + 1}** - <@${winner.userId}>`,
+      //   files: [
+      //     {
+      //       attachment: bufferRouletteImage,
+      //       name: "roulette.gif",
+      //     },
+      //   ],
+      // });
+      const { Wheel } = require('roulette-gif')
+      const wheel = new Wheel()
+      
     
-    const gifBuffer = await createRouletteGifImage(sectors);
-    if(message.channel instanceof TextChannel) {
-    await message.channel.send({
-    
-      files: [{ attachment: gifBuffer, name: "roulette.gif" }],
-       content: `Congratulationsssssssssss 🎉 you won`
-           })
+      let { 
+        buffer, 
+        winner, 
+        lastFrame 
+      } = await wheel.createGif({
+        slots: sectors.sort((a: any, b: any) => a.number - b.number, 0),
+        stream: false, // Set it to true if you want to return stream insted of buffer
+        wheelStroke: {
+          color: '#fff',
+          width: 5
+        },
+
+        slotStroke: {
+          color: '#fff',
+          width: 5
+        },
+        imageStroke: {
+          color: '#fff',
+          width: 5
+        },
+        // winnerSlotColor: 'Gold'
+      });
+
+            await message.channel.send({
+        content: `**${winner.number}** - <@${winner.userId}>`,
+        files: [
+          {
+            attachment: buffer,
+            name: "roulette.gif",
+          },
+        ],
+      });
+
+      if (players.length <= 2 && message.channel instanceof TextChannel) {
+        await message.channel.send({
+          content: `:crown: - فاز <@!${winner.userId}> في اللعبة`,
+        });
+
+        const findRoulette = await rouletteGame.findOne({
+          guildId: message.guild?.id,
+          channelId: message.channel?.id,
+          msgId: id,
+        });
+
+        const xpJoiner = 2;
+        const xpWinner = 5;
+        const xpJoinerDobule = xpJoiner * 2;
+        const xpWinnerDobule = xpWinner * 2;
+
+       
+        findRoulette?.players.forEach(async (p) => {
+          const findP = await roulettePoint.findOne({
+            userId: p.userId,
+            guildId: message?.guildId,
+          });
+        if(findRoulette?.dobule === true) {
+          
+            if(!findP) {
+              if(winner.userId === p.userId) {
+                new roulettePoint({
+                  guildId: message?.guildId,
+                  userId: p.userId,
+                  p: xpWinnerDobule                
+                }).save();                
+              } else {
+              new roulettePoint({
+                guildId: message?.guildId,
+                userId: p.userId,
+                p: xpJoinerDobule              
+              }).save();
+            }
+            } else {
+              if(winner.userId === p.userId) {
+              findP.p += xpWinnerDobule;
+              await findP.save();
+            } else {
+              findP.p += xpJoinerDobule;
+              await findP.save();
+            }
           }
+        } else {
+          const findP = await roulettePoint.findOne({
+            guildId: message?.guildId,
+            userId: p.userId
+          });
 
+          if(!findP) {
+            if(winner.userId === p.userId) {
+              new roulettePoint({
+                guildId: message?.guildId,
+                userId: p.userId,
+                p: xpWinner              
+              }).save();                
+            } else {
+            new roulettePoint({
+              guildId: message?.guildId,
+              userId: p.userId,
+              p: xpJoiner            
+            }).save();
+          }
+          } else {
+            if(winner.userId === p.userId) {
+            findP.p += xpWinner;
+            await findP.save();
+          } else {
+            findP.p += xpJoiner;
+            await findP.save();
+          }
+        }
+        await findRoulette?.deleteOne();
+      } 
+      })
+        } else {
+        await sendGameMessage(message, winner, players, id);
+      }
+    }
   } catch (err) {
     console.error("Error in starting roulette game:", err);
   }
-}
+};

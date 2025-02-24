@@ -79,7 +79,7 @@ class Test extends Command_1.default {
                 if (interaction.guild) {
                     const emb = (0, BaseEmbed_1.default)(interaction.guild, {
                         title: "deletechannel",
-                        des: `${emojis_1.default.true} تم حذف القناه ( \`${Targetchannel} \` )`,
+                        des: `${emojis_1.default.true} تم حذف القناه <#${Targetchannel}>`,
                         line: true,
                         footer: `حذف قناه`,
                         fields: `حذف قناه`,
@@ -110,7 +110,7 @@ class Test extends Command_1.default {
         للمزيد اشترك في [النسخه المطوره](https://discord.com/channels/1198628254043607070/1256976756485652480) 
           `, `Full Channels`, `Full Channels`);
                     if (schema_2) {
-                        if ((schema_2 === null || schema_2 === void 0 ? void 0 : schema_2.channelId.length) === 2) {
+                        if ((schema_2 === null || schema_2 === void 0 ? void 0 : schema_2.channelId.length) === 5) {
                             yield interaction.editReply({
                                 embeds: [emb2Full],
                             });
@@ -123,6 +123,7 @@ class Test extends Command_1.default {
                             return;
                         }
                         schema_2 === null || schema_2 === void 0 ? void 0 : schema_2.channelId.push(channel.id);
+                        schema_2.dateend = new Date();
                         yield (schema_2 === null || schema_2 === void 0 ? void 0 : schema_2.save());
                         yield interaction.editReply({
                             embeds: [emb],
@@ -132,11 +133,16 @@ class Test extends Command_1.default {
                         new SchemaChannel_1.default({
                             guildId: interaction.guild.id,
                             channelId: [],
+                            date: new Date(),
+                            dateend: new Date()
                         }).save();
                         const schema_3 = yield SchemaChannel_1.default.findOne({
                             guildId: interaction.guild.id,
                         });
                         schema_3 === null || schema_3 === void 0 ? void 0 : schema_3.channelId.push(channel.id);
+                        if (schema_3) {
+                            schema_3.dateend = new Date();
+                        }
                         yield (schema_3 === null || schema_3 === void 0 ? void 0 : schema_3.save());
                         yield interaction.editReply({
                             embeds: [emb],
@@ -147,9 +153,10 @@ class Test extends Command_1.default {
                         .setCustomId(`more_${interaction.guild.id}`)
                         .setStyle(discord_js_1.ButtonStyle.Secondary));
                     const message = yield channel.send({
-                        content: `🎉 **تم بإذن الله تفعيل البوت في هاذي القناه.**
-**سيتم تنزيل رساله للتحديثات الجديده ل اغلاقها**
-<:Arrow1:1299711671052402718> /update status status: off`,
+                        content: `
+      <:confetti_2:1343040164183674900>  **تم بإذن الله تفعيل البوت في هاذي القناه.**
+<:1336961650103947294:1343044829055160423>  **سيتم تنزيل رساله للتحديثات الجديده ل اغلاقها أستخدم:**
+${emojis_1.default.emen_arrow} **/**update status status: off`,
                         components: [ActionRowBuilderPrefix],
                     });
                     if ((_c = message.guild.members.me) === null || _c === void 0 ? void 0 : _c.permissions.has("ManageGuild")) {

@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Events_1 = __importDefault(require("../../../base/classes/Events"));
-const mainEmbed_1 = __importDefault(require("../../../utils/embeds/mainEmbed"));
+const BaseEmbed_1 = __importDefault(require("../../../utils/embeds/BaseEmbed"));
 const SchemaPrefix_1 = __importDefault(require("../../../schema/SchemaPrefix"));
+const emojis_1 = __importDefault(require("../../../utils/functions/emojis"));
 class CommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -26,7 +27,7 @@ class CommandHandler extends Events_1.default {
     }
     execute(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             if (!interaction.isButton())
                 return;
             if (interaction.customId === `more_${(_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id}`) {
@@ -35,11 +36,26 @@ class CommandHandler extends Events_1.default {
                 });
                 const prefixFind = yield SchemaPrefix_1.default.findOne({
                     guildId: (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id,
+                    channelId: (_c = interaction.channel) === null || _c === void 0 ? void 0 : _c.id,
                 });
-                const emb = (0, mainEmbed_1.default)(`${(prefixFind === null || prefixFind === void 0 ? void 0 : prefixFind.prefix.length) === 1 ? "بادئة" : "بادئات"} البوت : **${(prefixFind === null || prefixFind === void 0 ? void 0 : prefixFind.prefix.join(",")) || "+"}**`, "System", "System");
-                yield interaction.editReply({
-                    embeds: [emb],
-                });
+                if (!interaction.guild) {
+                    return console.log("خطا في interaction.guild");
+                }
+                const emb = (0, BaseEmbed_1.default)(interaction.guild, {
+                    title: `${(prefixFind === null || prefixFind === void 0 ? void 0 : prefixFind.prefix.length) === 1 ? "بادئة" : "بادئات"} **البوت**`,
+                    des: `
+          <:blogging:1343040598919090236> **البريفكس** المخصصه لديك في هاذي القناه **هيَ**:
+${emojis_1.default.open} **${(prefixFind === null || prefixFind === void 0 ? void 0 : prefixFind.prefix.join(",")) || "+"}** ${emojis_1.default.close}
+          `,
+                    line: false,
+                    footer: "بيانات القناه",
+                    fields: "بيانات القناه"
+                }, "Base");
+                if (emb) {
+                    yield interaction.editReply({
+                        embeds: [emb],
+                    });
+                }
             }
         });
     }

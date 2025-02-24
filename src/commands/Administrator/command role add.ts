@@ -241,6 +241,25 @@ export default class Test extends Command {
   } else if(subCommand === "control") {
 
     const command = interaction.options.getString('command-select');
+    if(command === "") {
+      const BaseEmbed1 = BaseEmbed(
+        interaction.guild,
+        {
+          title: "مهلا",
+          des: "هاذا الأمر غير مسموح لك بإستخدامه!",
+          line: true,
+          footer: "Error.",
+          fields: "Error."
+        },
+        "Error"
+      );
+
+      if(BaseEmbed1) {
+        return interaction.editReply({
+          embeds: [BaseEmbed1]
+        });
+      }
+    }
     const disabled = interaction.options.getBoolean('disabled');
     let find = await SchemaControl.findOne({
       guildId: interaction.guildId,
@@ -276,24 +295,40 @@ export default class Test extends Command {
       } else {
       new SchemaControl({
         guildId: interaction.guildId,
-        command: []
+        command: [command]
       }).save();
     }
   }
 
-  const BaseEmbed11 = BaseEmbed(
+  const ddfind = await SchemaControl.findOne({
+    guildId: interaction.guildId,
+  });  
+  let content = await ddfind?.command.map((data) => {
+    if(data === "all") {
+      return "جميع الاوامر"
+    } else if(data === "one") {
+      return "الاوامر الفرديه"
+    } else if(data === 'two') {
+      return "الاوامر الثنائيه"
+    } else  if(data === "three") {
+      return "اوامر المجموعه"
+    } else {
+      return data;
+    }
+  });
+  const BaseEmbed11 = await BaseEmbed(
     interaction.guild,
     {
       title: "تم بنجاح!",
-      des: `${emoji.true} | **تم بنجاح **تعطيل الأمر`,
+      des: `${emoji.true} | **تم بنجاح **تعطيل الأمر\n\nالأوامر المُعطله: ${emoji.close} **${content?.join(",")}** ${emoji.open}`,
       line: true,
-      footer: "Error.",
-      fields: "Error."
+      footer: "Success.",
+      fields: "Success."
     },
-    "Base"
+    "Success"
   );
   if(BaseEmbed11) {
-    return interaction.editReply({
+    return await interaction.editReply({
       embeds: [BaseEmbed11]
     });
   }
@@ -316,17 +351,18 @@ export default class Test extends Command {
         });
       }
     } else {
-      await find.deleteOne();
+      find.command = find.command.filter((c) => c !== command);
+      await find.save();
       const BaseEmbed11 = BaseEmbed(
         interaction.guild,
         {
-          title: "حدث خطأ!",
+          title: "تم بنجاح!",
           des: `${emoji.true} | **تم بنجاح إعادة **تشغيل الأمر`,
           line: true,
-          footer: "Error.",
-          fields: "Error."
+          footer: "Success.",
+          fields: "Success."
         },
-        "Base"
+        "Success"
       );
       if(BaseEmbed11) {
         return interaction.editReply({

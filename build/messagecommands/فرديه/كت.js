@@ -12,12 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
 const kt_1 = __importDefault(require("../../utils/games/kt"));
-const canvas_1 = __importDefault(require("canvas"));
-const path_1 = __importDefault(require("path"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class كت extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -32,15 +30,19 @@ class كت extends MessageCreate_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const randomword_1 = Math.floor(Math.random() * kt_1.default.length);
             const randomword_2 = kt_1.default[randomword_1];
-            const Canvas = canvas_1.default.createCanvas(700, 250);
-            const ctx = Canvas.getContext("2d");
-            const filePath = path_1.default.resolve("assets", "BOTBNGNOROBOT.png");
-            const attach = new discord_js_1.AttachmentBuilder(Canvas.toBuffer("image/png"), {
-                name: "image.png",
-            });
-            yield message.reply({
-                content: randomword_2,
-            });
+            if (!message.guild)
+                return;
+            const base = (0, BaseEmbed_1.default)(message.guild, {
+                des: `## ${randomword_2}`,
+                line: false,
+                footer: "كت",
+                fields: "كت",
+            }, "Base");
+            if (base) {
+                yield message.reply({
+                    embeds: [base],
+                });
+            }
         });
     }
 }

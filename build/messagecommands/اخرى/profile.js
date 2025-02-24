@@ -19,11 +19,11 @@ const Profile_1 = __importDefault(require("../../utils/functions/Profile"));
 class help extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
-            name: "profile",
-            description: "إضهار المعلومات",
+            name: "الملف الشخصي",
+            description: "الملف الشخصي لك/لغيرك.",
             category: Category_1.default.ادمن,
             cooldown: 3,
-            aliases: ["بروفايل"],
+            aliases: ["بروفايل", "معلوماتي"],
         });
     }
     execute(message) {

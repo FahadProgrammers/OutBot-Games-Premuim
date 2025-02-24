@@ -4,8 +4,9 @@ import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import mainembed from "../../utils/embeds/mainEmbed";
 import ktword from "../../utils/games/kt";
-import canvas from "canvas";
+import canvas, { loadImage } from "canvas";
 import path from "path";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class كت extends Command {
   constructor(client: CustomClient) {
@@ -21,16 +22,21 @@ export default class كت extends Command {
   async execute(message: Message) {
     const randomword_1 = Math.floor(Math.random() * ktword.length);
     const randomword_2 = ktword[randomword_1];
-
-    const Canvas = canvas.createCanvas(700, 250);
-    const ctx = Canvas.getContext("2d");
-    const filePath = path.resolve("assets", "BOTBNGNOROBOT.png");
-    const attach = new AttachmentBuilder(Canvas.toBuffer("image/png"), {
-      name: "image.png",
-    });
-
-    await message.reply({
-      content: randomword_2,
-    });
+    if (!message.guild) return;
+    const base = BaseEmbed(
+      message.guild,
+      {
+        des: `## ${randomword_2}`,
+        line: false,
+        footer: "كت",
+        fields: "كت",
+      },
+      "Base"
+    );
+    if (base) {
+      await message.reply({
+        embeds: [base],
+      });
+    }
   }
 }

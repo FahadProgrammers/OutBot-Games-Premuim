@@ -121,25 +121,40 @@ export default class Test extends Command {
         return interaction.reply({ content: "❌ لم يتم العثور على بيانات متطابقة.", ephemeral: true }); 
       } 
 
-      const selectMenu = new StringSelectMenuBuilder() 
-        .setCustomId("poll") 
-        .setPlaceholder("اختر الأمر!"); 
 
-      answers.forEach((commandName) => { 
-        selectMenu.addOptions( 
-          new StringSelectMenuOptionBuilder() 
-            .setLabel(commandName) 
-            .setValue(`select_${commandName}`) 
-        ); 
-      }); 
+      const MAX_OPTIONS = 25; // الحد الأقصى للخيارات في كل قائمة
 
-      const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu); 
-
-      await interaction.reply({ content: "تم إعداد التصويت بنجاح!", ephemeral: true }); 
-      const message = await interaction.channel.send({ 
-        content: `🔹 **${title}**\nيرجى اختيار أمر من القائمة أدناه.`, 
-        components: [row], 
-      }); 
+      // تقسيم الإجابات إلى دفعات لا تتجاوز 25 عنصرًا
+      const answerBatches: string[][] = [];
+      for (let i = 0; i < answers.length; i += MAX_OPTIONS) {
+        answerBatches.push(answers.slice(i, i + MAX_OPTIONS));
+      }
+      
+      // قائمة الـ ActionRowBuilder لكل دفعة
+      const actionRows: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
+      
+      answerBatches.forEach((batch, index) => {
+        const selectMenu = new StringSelectMenuBuilder()
+          .setCustomId(`poll_${index}`)
+          .setPlaceholder(`اختر الأمر! (صفحة ${index + 1})`);
+      
+        batch.forEach((commandName) => {
+          selectMenu.addOptions(
+            new StringSelectMenuOptionBuilder()
+              .setLabel(commandName)
+              .setValue(`select_${commandName}`)
+          );
+        });
+      
+        actionRows.push(new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu));
+      });
+      
+      // إرسال كل القوائم في رسالة واحدة إذا كانت ضمن الحد الأقصى
+      await interaction.reply({ content: "تم إعداد التصويت بنجاح!", ephemeral: true });
+      const message = await interaction.channel.send({
+        content: `🔹 **${title}**\nيرجى اختيار أمر من القائمة أدناه.`,
+        components: actionRows, // إرسال جميع القوائم معًا
+      })      
 
       const collector = message.createMessageComponentCollector({ 
         componentType: ComponentType.StringSelect, 
@@ -195,11 +210,9 @@ export default class Test extends Command {
       
         finalResults += `-------------------\n🥇 **الفائز**: **${sortedResults[0][0]}** \\**${sortedResults[0][1]}** تصويت.`
       
-        const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu.setDisabled(true)); 
       
         await message.edit({ 
           content: `🛑 تم إيقاف التصويت. [رابط التصويت](https://discord.com/channels/${message.guild?.id}/${message.channel.id}/${message.id}).`, 
-          components: [disabledRow], 
         });
       
         await message.reply({ 
