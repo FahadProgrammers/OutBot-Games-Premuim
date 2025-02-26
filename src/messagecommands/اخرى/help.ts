@@ -23,7 +23,8 @@ export default class help extends Command {
   }
   async execute(message: Message) {
     if(message.guild) {
-    const Embed = BaseEmbed(
+    const Embed = await BaseEmbed(
+      this.client,
       message.guild,
       {
         title: "قائمة الاوامر", 

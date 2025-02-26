@@ -11,15 +11,22 @@ import emoji from "./emojis";
 import rank from "./rank";
 import schema from "../../schema/SchemaUsers";
 import pschema from "../../schema/SchemaPrefix";
-import words from "../games/jm3";
+import success from "../games/success";
+import CustomClient from "../../base/classes/CustomClient";
+import SchemaChannel from "../../schema/SchemaChannel";
 
-async function Collecter(message: Message, randomKey: string, time_1: number) {
+async function Collecter(client: CustomClient, message: Message, randomKey: string, time_1: number) {
   try {
     if (message.channel instanceof TextChannel) {
+      const find = await SchemaChannel.findOne({
+        guildId: message.guild?.id,
+        channelId: message.channel.id
+      });
+
       const filter = (m: Message) => m.author.id !== message.client.user?.id;
       const collector = message.channel.createMessageCollector({
         filter,
-        time: 5000,
+        time: find?.time ? find.time * 1000 : 5000,
       });
 
       collector.on("collect", async (m) => {
@@ -67,7 +74,7 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
                 .setCustomId("disabled_ranl")
                 .setDisabled(true)
                 .setStyle(ButtonStyle.Secondary)
-                .setLabel(`${rank_2.name} - ${schema_3.p ?? 1}`),
+                .setLabel(`${rank_2.name} [ ${schema_3.p ?? 1} ]`),
               new ButtonBuilder()
                 .setEmoji("<:time:1343029577701654568>")
                 .setLabel(content)
@@ -76,9 +83,9 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
                 .setStyle(ButtonStyle.Secondary),
               new ButtonBuilder()
                 .setLabel("نظام النقاط")
-                .setStyle(ButtonStyle.Primary)
+                .setStyle(ButtonStyle.Secondary)
                 .setCustomId("rank_info")
-                .setEmoji("<:waste:1343052121171562618>")
+                .setEmoji("<:badge:1343344820395184251>")
             );
 
             const prefixx = (await pschema.findOne({
@@ -87,11 +94,13 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
             })) || { prefix: "+" };
 
             if (message.guild) {
-              const greensuccess = BaseEmbed(
+              const ran = success[Math.floor(Math.random() * success.length)];
+              const greensuccess = await BaseEmbed(
+                client,
                 message.guild,
                 {
                   title: "إجابه صحيحه",
-                  des: `> ${emoji.true} فنان، إجابه **صحيحه** ( \`**${randomKey}**\` )
+                  des: `> ${emoji.true} ${ran}, إجابه **صحيحه** ( \`**${randomKey}**\` )
 
 -# ${emoji.emen_arrow} ل رؤية البروفايل الخاص بك بشكل أسرع استخدم 
 -# /profile | ${prefixx.prefix}بروفايل
@@ -117,7 +126,8 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
           collector.stop();
 
           if (message.guild) {
-            const wrongAnswerEmbed = BaseEmbed(
+            const wrongAnswerEmbed = await BaseEmbed(
+              client,
               message.guild,
               {
                 title: "إجابه خاطئه!",
@@ -143,7 +153,8 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
         if (reason === "time") {
           // ⏳ **انتهى الوقت ولم يجب أحد إجابة صحيحة**
           if (message.guild) {
-            const timeUpEmbed = BaseEmbed(
+            const timeUpEmbed = await BaseEmbed(
+              client,
               message.guild,
               {
                 title: "انتهى الوقت!",
@@ -159,14 +170,16 @@ async function Collecter(message: Message, randomKey: string, time_1: number) {
                 "https://cdn.discordapp.com/emojis/1343029577701654568.png?quality=lossless"
               );
 
-              await message.reply({
-                embeds: [timeUpEmbed],
-              });
+                await message.reply({
+                  embeds: [timeUpEmbed],
+                });
+              
             }
           }
         }
       });
-    }
+    
+  }
   } catch (err) {
     console.log(err);
   }

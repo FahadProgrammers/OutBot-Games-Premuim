@@ -9,12 +9,10 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
-import word from "../../utils/games/mfrd";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
+import word from "../../utils/games/words.jm3.json";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
-import warningembed_1 from "../../utils/embeds/warnembed";
-import BaseEmbed from "../../utils/embeds/BaseEmbed";
 import emoji from "../../utils/functions/emojis";
 import canvas, { loadImage } from "canvas";
 import path from "path";
@@ -33,9 +31,10 @@ export default class مفرد extends Command {
   }
 
   async execute(message: Message) {
-    const randomKey =
-      Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
-    const randomValue = word[randomKey];
+    const randomKey = Object.keys(word.words)[
+      Math.floor(Math.random() * Object.keys(word.words).length)
+    ];
+    const randomValue = word.words[randomKey as keyof typeof word.words];
 
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
@@ -72,16 +71,32 @@ export default class مفرد extends Command {
       .catch((err: any) => {
         console.log(err);
       });
+if(!message.guild) return;
+    const base = await BaseEmbed(
+      this.client,
+      message.guild,
+      {
+        line: false,
+        title: "✧ لعبة المفرد ✧",
+        footer: "مفرد الكلمة",
+        fields: `حاول إيجاد المفرد الصحيح لكلمة: **${randomValue}**`,
+      },
+      "Base"
+    );
+    if(base) {
+
     const messageFetch = await message.reply({
       files: [Canvas.toBuffer()],
+      embeds: [base],
     });
-
+  
     const time_1 = Date.now();
     let status = false;
     try {
-      await Collecter(messageFetch, randomKey, time_1);
+      await Collecter(this.client, messageFetch, randomKey, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }
   }
+}
 }

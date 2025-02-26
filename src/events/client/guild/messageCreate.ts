@@ -49,7 +49,7 @@ export default class MessageCommandHandler extends Event {
           if (!usedPrefix) return;
         } else { 
           usedPrefix = prefix;
-          if (!message.content.startsWith(usedPrefix)) return; 
+if (!message.content.startsWith(usedPrefix)) return; 
         } 
         
         
@@ -76,7 +76,8 @@ export default class MessageCommandHandler extends Event {
       
           if (bestMatch.distance <= 2) {
             if(message.guild) {
-            const Embed = BaseEmbed(
+            const Embed = await BaseEmbed(
+              this.client,
               message.guild,
               {
                 title: "الأمر غير صحيح!",
@@ -141,7 +142,7 @@ export default class MessageCommandHandler extends Event {
         setTimeout(function() {
           timestamps.delete(message.author.id)
         }, cooldownAmount);
-        try {
+        
           const findRoleEvent = await schemaRoleEvent.findOne({
             guildId: message.guild?.id,
             channelId: message.channel.id,
@@ -214,24 +215,21 @@ export default class MessageCommandHandler extends Event {
         } else {
           await command.execute(message);
         }
-      } catch (err: any) {
+      }
+     }
+     }
+     }
+     } catch (err: any) {
 console.log("err help sos", err)
         message.reply({
             embeds: [
               new EmbedBuilder()
                 .setColor("Red")
                 .setDescription(
-                  "❌ حدث خطأ ."
+                  `❌ قد واجتنها مشكله: ${err.message}`
                 ),
             ],
           });
-        }
-      } 
-    }
-   }
-  }
-   } catch (err) {
-      console.error("An error occurred in the message event:", err);
+     }
     }
   }
-}

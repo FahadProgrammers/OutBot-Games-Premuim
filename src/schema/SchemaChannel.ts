@@ -3,6 +3,7 @@ import { model, Schema } from 'mongoose'
 interface schema {
     guildId: string;
     channelId: string[];
+    time: number;
     date: Date;
     dateend: Date;
 }
@@ -10,8 +11,9 @@ interface schema {
 const schema2 = new Schema<schema>({
 guildId: String,
 channelId: Array,
+time: { type: Number, require: false },
 date: { type: Date, default: Date.now() },
 dateend: { type: Date, default: Date.now(), required: false }
 });
 
-export default model<schema>("channel-Tester", schema2);
+export default model<schema>("channel-prem", schema2);

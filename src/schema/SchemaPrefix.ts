@@ -14,4 +14,4 @@ channelId: { type: String, required: true },
 date: { type: Date, default: Date.now() },
 });
 
-export default model<schema>("prefix-Tester", schema2);
+export default model<schema>("prefix-prem", schema2);

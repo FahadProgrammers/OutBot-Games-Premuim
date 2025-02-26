@@ -6,10 +6,10 @@ import {
 } from "discord.js";
 import CustomClient from "../../../base/classes/CustomClient";
 import Event from "../../../base/classes/Events";
-import mainembedWithUser from "../../../utils/embeds/mainembedWithUser";
 import Category from "../../../base/enums/Category";
 import utils from "../../../utils/utils";
 import emoji from "../../../utils/functions/emojis";
+import BaseEmbed from "../../../utils/embeds/BaseEmbed";
 
 export default class CommandHandler extends Event {
   constructor(client: CustomClient) {
@@ -28,12 +28,19 @@ export default class CommandHandler extends Event {
       });
       const value = interaction.values[0];
       const member = interaction.member as GuildMember;
-      const embed = mainembedWithUser(
-        undefined,
-        `help ( ${value} )`,
-        `Game`,
-        member
+      if(!interaction.guild) return;
+      const embed = await BaseEmbed(
+        this.client,
+        interaction.guild,
+        {
+          des: undefined,
+          line: false,
+          footer: `طلب مساعده.`,
+          fields: "طلب مساعده"
+        },
+        "Base"
       );
+      if(embed) {
       const commands = this.client.messagecommands;
       const commands2 = this.client.commands;
       let hasCommands = false;
@@ -46,13 +53,15 @@ export default class CommandHandler extends Event {
         
           const isArabic = /[^\u0000-\u007F]/.test(command.name.charAt(0));
         
+          if(value === command.category) {
           embed.addFields({
             name: "<:1323739617790263326:1341704260483551323> " + command.name || "No Name",
             value: "<:file1:1341704211972231249> " + `${command.description} \n اختصارات : ${isArabic ? emoji.close : emoji.open} **${command.aliases.join(",") || "لايوجد"}** ${isArabic ? emoji.open : emoji.close}`,
           });
         
           hasCommands = true;
-        });
+        }
+      });
         
     } else if(value !== "all") {
       commands2.forEach((command) => {
@@ -135,4 +144,5 @@ return;
       });
     }
   }
+}
 }

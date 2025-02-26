@@ -58,4 +58,4 @@ const schema2 = new mongoose_1.Schema({
     ],
     msgId: String,
 });
-exports.default = (0, mongoose_1.model)("schemaGameTester00", schema2);
+exports.default = (0, mongoose_1.model)("roulette-prem", schema2);

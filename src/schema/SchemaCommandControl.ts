@@ -10,4 +10,4 @@ guildId: String,
 command: Array,
 });
 
-export default model<schema>("SchemaCommandControl", schema2);
+export default model<schema>("command-prem", schema2);

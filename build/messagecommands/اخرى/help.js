@@ -30,7 +30,7 @@ class help extends MessageCreate_1.default {
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
             if (message.guild) {
-                const Embed = (0, BaseEmbed_1.default)(message.guild, {
+                const Embed = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
                     title: "قائمة الاوامر",
                     des: `
       <:Picsart_241028_170653120:1303325780704759868> - **قائمة الاوامر**:

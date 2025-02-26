@@ -52,6 +52,7 @@ const words_json_1 = __importDefault(require("../../utils/games/words.json"));
 const canvas_1 = __importStar(require("canvas"));
 const path_1 = __importDefault(require("path"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
+const SchemaTheme_1 = __importDefault(require("../../schema/SchemaTheme"));
 class اسرع extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -64,13 +65,27 @@ class اسرع extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const randomword_1_1 = Math.floor(Math.random() * success_1.default.length);
             const randomword_1_2 = success_1.default[randomword_1_1];
             const wordsss = yield words_json_1.default.words;
             const randomword_2_2 = wordsss[Math.floor(Math.random() * words_json_1.default.words.length)];
             const Canvas = canvas_1.default.createCanvas(700, 250);
             const ctx = Canvas.getContext("2d");
-            const filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
+            const f = yield SchemaTheme_1.default.findOne({
+                guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id
+            });
+            let filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
+            if (f) {
+                switch (f.theme) {
+                    case "1":
+                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png");
+                        break;
+                    case "2":
+                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png");
+                        break;
+                }
+            }
             yield (0, canvas_1.loadImage)(filePath)
                 .then((image) => __awaiter(this, void 0, void 0, function* () {
                 canvas_1.default.registerFont(path_1.default.resolve("src/utils/assets/Fonts", "alfont_com_Wafeq-SemiBold.otf"), {
@@ -94,12 +109,13 @@ class اسرع extends MessageCreate_1.default {
                 console.log(err);
             });
             const messageFetch = yield message.reply({
-                files: [Canvas.toBuffer()],
+                files: [Canvas.toBuffer()
+                ],
             });
             const time_1 = Date.now();
             let status = false;
             try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomword_2_2, time_1);
+                yield (0, MessageCollecter_1.default)(this.client, messageFetch, randomword_2_2, time_1);
             }
             catch (err) {
                 console.log("Error of Collecter!!");

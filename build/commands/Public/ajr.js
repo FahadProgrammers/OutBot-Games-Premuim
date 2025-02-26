@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../../base/classes/Command"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const mainEmbed_1 = __importDefault(require("../../utils/embeds/mainEmbed"));
 const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class ajr extends Command_1.default {
     constructor(client) {
         super(client, {
@@ -38,16 +38,25 @@ class ajr extends Command_1.default {
                     content: `${emojis_1.default.false} | ?`,
                 });
             }
-            yield interaction.editReply({
-                embeds: [
-                    yield (0, mainEmbed_1.default)(`
-      صدقة جاريه
-الله يرحمه ويغفر له ويغفر له ويسكنه فسيح جناته
-
-https://ehsan.sa/campaign/1E29E00C61
-عن أبي هُريرة رضي الله عنه : أَنَّ رسولَ اللَّه ﷺ قَالَ: مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ، وَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا، وَمَا تَوَاضَعَ أَحَدٌ للَّهِ إِلَّا رَفَعَهُ اللّهُ عز وجل`, "System", "System"),
-                ],
-            });
+            const embed = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                line: false,
+                title: `صدقة جاريه`,
+                footer: "System",
+                fields: `
+          الله يرحمه ويغفر له ويغفر له ويسكنه فسيح جناته
+    
+          [تبرع الآن](https://ehsan.sa/campaign/1E29E00C61)
+    
+          عن أبي هُريرة رضي الله عنه : أَنَّ رسولَ اللَّه ﷺ قَالَ: مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ، وَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا، وَمَا تَوَاضَعَ أَحَدٌ للَّهِ إِلَّا رَفَعَهُ اللّهُ عز وجل
+        `,
+            }, "Base");
+            if (embed) {
+                yield interaction.editReply({
+                    embeds: [
+                        embed
+                    ],
+                });
+            }
         });
     }
 }

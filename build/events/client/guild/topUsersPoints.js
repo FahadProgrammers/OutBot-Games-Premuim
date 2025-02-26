@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Events_1 = __importDefault(require("../../../base/classes/Events"));
-const mainEmbed_1 = __importDefault(require("../../../utils/embeds/mainEmbed"));
 const SchemaUsers_1 = __importDefault(require("../../../schema/SchemaUsers"));
 const rank_1 = __importDefault(require("../../../utils/functions/rank"));
+const BaseEmbed_1 = __importDefault(require("../../../utils/embeds/BaseEmbed"));
 class CommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -54,10 +54,19 @@ class CommandHandler extends Events_1.default {
                 })
                     .slice(0, 10)
                     .join("\n");
-                const emb = (0, mainEmbed_1.default)(top10PointsAll, "لاتسى قول ( ما شاء الله )", "لاتسى قول ( ما شاء الله )");
-                yield interaction.editReply({
-                    embeds: [emb],
-                });
+                if (!interaction.guild)
+                    return;
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    line: false,
+                    title: top10PointsAll,
+                    footer: "لاتسى قول ( ما شاء الله )",
+                    fields: "لاتسى قول ( ما شاء الله )",
+                }, "Base");
+                if (emb) {
+                    yield interaction.editReply({
+                        embeds: [emb],
+                    });
+                }
             }
         });
     }

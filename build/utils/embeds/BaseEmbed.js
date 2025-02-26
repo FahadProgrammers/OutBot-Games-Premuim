@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,83 +16,76 @@ exports.default = BaseEmbed;
 const discord_js_1 = require("discord.js");
 const utils_1 = __importDefault(require("../../utils/utils"));
 const emojis_1 = __importDefault(require("../functions/emojis"));
-;
-function BaseEmbed(GuildiObject, EmbedObject, embedType) {
-    try {
-        let Embed = new discord_js_1.EmbedBuilder();
-        let des = EmbedObject.des;
-        let fields = EmbedObject.fields;
-        let footer = EmbedObject.footer;
-        let title = EmbedObject.title;
-        let line = EmbedObject.line;
-        if (line === true) {
-            Embed.setImage(utils_1.default.Line);
-        }
-        if (embedType === "Base") {
-            if (EmbedObject.title) {
-                Embed
-                    .setTitle(`OutBot - Games ${title ? `| ${title}` : ""}`);
+const SchemaEmbedColor_1 = __importDefault(require("../../schema/SchemaEmbedColor"));
+function BaseEmbed(client, GuildiObject, EmbedObject, embedType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let Embed = new discord_js_1.EmbedBuilder();
+            let { title, des, line, footer, fields } = EmbedObject;
+            let color = "Red";
+            const find = yield SchemaEmbedColor_1.default.findOne({ guildId: GuildiObject.id });
+            if (find) {
+                color = find.embedcolor;
             }
-            if (EmbedObject.des) {
-                Embed
-                    .setDescription(des ? des : "ERR");
+            if (line) {
+                Embed.setImage(utils_1.default.Line);
             }
-            Embed
-                .setTimestamp()
-                .setFooter({
-                text: `OutBot Games - ${footer ? footer : "Bot"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            })
-                .setColor('Red')
-                .setAuthor({
-                name: `OutBot Games - ${fields ? fields : "Bot"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            });
-            const emojiURL = emojis_1.default.BaseURL;
-            Embed.setThumbnail(emojiURL);
-        }
-        else if (embedType === "Success") {
-            if (EmbedObject.des) {
-                Embed
-                    .setDescription(des ? des : "ERR");
+            switch (embedType) {
+                case "Base":
+                    if (title) {
+                        Embed.setTitle(`${GuildiObject.name} - ${title ? `${title}` : ""}`);
+                    }
+                    if (des) {
+                        Embed.setDescription(des);
+                    }
+                    Embed.setAuthor({
+                        name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setFooter({
+                        text: `${GuildiObject.name} - ${footer || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setColor(color)
+                        .setThumbnail(GuildiObject.iconURL() || emojis_1.default.BaseURL)
+                        .setTimestamp();
+                    break;
+                case "Success":
+                    Embed.setDescription(des || "ERR")
+                        .setColor("Green")
+                        .setAuthor({
+                        name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setFooter({
+                        text: `${GuildiObject.name} - ${fields || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setThumbnail(emojis_1.default.trueURL)
+                        .setTimestamp();
+                    break;
+                case "Error":
+                    Embed.setDescription(des || "ERR")
+                        .setColor("Red")
+                        .setAuthor({
+                        name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setFooter({
+                        text: `${GuildiObject.name} - ${fields || "Bot"}`,
+                        iconURL: GuildiObject.iconURL() || emojis_1.default.BaseURL,
+                    })
+                        .setThumbnail(emojis_1.default.falseURL)
+                        .setTimestamp();
+                    break;
+                default:
+                    throw new Error("Invalid embedType provided.");
             }
-            Embed
-                .setTimestamp()
-                .setFooter({
-                text: `OutBot Games - ${footer ? footer : "Game"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            })
-                .setColor('Green')
-                .setAuthor({
-                name: `OutBot Games - ${fields ? fields : "Game"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            });
-            const emojiURL = emojis_1.default.trueURL;
-            Embed.setThumbnail(emojiURL);
+            return Embed;
         }
-        else if (embedType === "Error") {
-            if (EmbedObject.des) {
-                Embed
-                    .setDescription(des ? des : "ERR");
-            }
-            Embed
-                .setTimestamp()
-                .setFooter({
-                text: `OutBot Games - ${footer ? footer : "Game"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            })
-                .setColor('Red')
-                .setAuthor({
-                name: `OutBot Games - ${fields ? fields : "Game"}`,
-                iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-            });
-            const emojiURL = emojis_1.default.falseURL;
-            Embed.setThumbnail(emojiURL);
+        catch (err) {
+            console.error("Error in BaseEmbed:", err);
+            return null;
         }
-        return Embed;
-    }
-    catch (err) {
-        console.log('Error of BaseEmbed', err);
-    }
+    });
 }
-;

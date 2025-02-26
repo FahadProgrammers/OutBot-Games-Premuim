@@ -6,8 +6,8 @@ import {
 import CustomClient from "../../../base/classes/CustomClient";
 import Event from "../../../base/classes/Events";
 import schema from "../../../schema/SchemaEventStarter";
-import mainembed from "../../../utils/embeds/mainEmbed";
 import emoji from "../../../utils/functions/emojis";
+import BaseEmbed from "../../../utils/embeds/BaseEmbed"; // تأكد من استيراد BaseEmbed
 
 export default class CommandHandler extends Event {
   constructor(client: CustomClient) {
@@ -17,13 +17,27 @@ export default class CommandHandler extends Event {
       once: false,
     });
   }
+
   async execute(interaction: Interaction) {
     if (!interaction.isButton()) return;
+
     if (interaction.customId.startsWith("buttonn_")) {
       const [, name, channelId] = interaction.customId.split("_");
 
-      const embed = await mainembed("يرجى الاختيار ماتريد من الالعاب أدناه");
+      if(!interaction.guild) return;
 
+      const embed = await BaseEmbed(
+        this.client,
+        interaction.guild,
+        {
+          line: false,
+          title: "يرجى الاختيار ماتريد من الالعاب أدناه",
+          footer: "System",
+          fields: "System",
+        },
+        "Base"
+      );
+if(embed) {
       let query = await schema.findOne({
         guildId: interaction.guild?.id,
         channel: channelId,
@@ -66,6 +80,7 @@ export default class CommandHandler extends Event {
         query.commands?.push(name);
         await query.save();
       }
+
       query = await schema.findOne({
         guildId: interaction.guild?.id,
         channel: channelId,
@@ -88,29 +103,52 @@ export default class CommandHandler extends Event {
         content: "OutBot Games",
         embeds: [embed],
       });
-    } else if (interaction.customId.startsWith("okay_")) {
+    } 
+  } else if (interaction.customId.startsWith("okay_")) {
       const [, channelId] = interaction.customId.split("_");
       let query = await schema.findOne({
         guildId: interaction.guild?.id,
         channel: channelId,
       });
       if (query) {
-        if (query.commands?.length === 0) {
+        if(!interaction.guild) return;
+        const embed = await BaseEmbed(
+          this.client,
+          interaction.guild,
+          {
+            line: false,
+            title: `تاكد من اختيار لعبه واحده على الاقل! | ${emoji.false}`,
+            footer: "System",
+            fields: "System",
+          },
+          "Base"
+        )
+
+        if (embed && query.commands?.length === 0) {
           return await interaction.update({
             embeds: [
-              await mainembed(
-                `تاكد من اختيار لعبه واحده على الاقل! | ${emoji.false}`
-              ),
+          embed
             ],
             components: [],
           });
         }
       }
+      if(!interaction.guild) return;
+      const embed = await BaseEmbed(
+        this.client,
+        interaction.guild,
+        {
+          line: false,
+          title: `سيتم تفعيل اللعبه بإذن الله بعد قليل, أستمتع, ${emoji.true}`,
+          footer: "System",
+          fields: "System",
+        },
+        "Base"
+      )
+      if(embed) {
       await interaction.update({
         embeds: [
-          await mainembed(
-            `سيتم تفعيل اللعبه بإذن الله بعد قليل, أستمتع, ${emoji.true}`
-          ),
+  embed,
         ],
         components: [],
       });
@@ -148,7 +186,8 @@ export default class CommandHandler extends Event {
           }
         }
       }
-    } else if (interaction.customId.startsWith("cancel")) {
+    }
+   } else if (interaction.customId.startsWith("cancel")) {
       const [, channelId] = interaction.customId.split("_");
       let query = await schema.findOne({
         guildId: interaction.guild?.id,
@@ -156,10 +195,25 @@ export default class CommandHandler extends Event {
       });
 
       await query?.deleteOne();
+      if(!interaction.guild
+      ) return;
+      const emb = await BaseEmbed(
+        this.client,
+        interaction.guild,
+        {
+          line: false,
+          title: `تم بنجاح تنفيذ الأمر | ${emoji.true}`,
+          footer: "System",
+          fields: "System",
+        },
+        "Base"
+      );
+      if(emb) {
       await interaction.update({
-        embeds: [await mainembed(`تم بنجاح تنفيذ الأمر | ${emoji.true}`)],
+        embeds: [emb],
         components: [],
       });
     }
+  }
   }
 }

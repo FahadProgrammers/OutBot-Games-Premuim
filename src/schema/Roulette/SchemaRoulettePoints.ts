@@ -12,4 +12,4 @@ const schema2 = new Schema<SchemaType>({
     p: { type: Number, required: true } 
 });
 
-export default model<SchemaType>("RoulettePointsTester", schema2);
+export default model<SchemaType>("roulette-points-prem", schema2);

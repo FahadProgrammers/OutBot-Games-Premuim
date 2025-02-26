@@ -8,11 +8,9 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import embedsuccess from "../../utils/embeds/BaseEmbed";
 import randomwordSuccess from "../../utils/games/success";
-import randomwords from "../../utils/games/splitwords";
-import warningembed_1 from "../../utils/embeds/warnembed";
+import randomwords from "../../utils/games/splitwords.json";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
 import emoji from "../../utils/functions/emojis";
@@ -33,10 +31,11 @@ export default class فكك extends Command {
   }
   async execute(message: Message) {
     const randomKey =
-      Object.keys(randomwords)[
-        Math.floor(Math.random() * Object.keys(randomwords).length)
+      Object.keys(randomwords.words)[
+        Math.floor(Math.random() * Object.keys(randomwords.words).length)
       ];
-    const randomValue = randomwords[randomKey];
+      const ran = randomwords.words;
+    const randomValue = ran[randomKey as keyof typeof ran];
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
     const filePath = path.resolve("src/utils/assets", "BOTBG.png");
@@ -79,7 +78,7 @@ export default class فكك extends Command {
     const time_1 = Date.now();
     let status = false;
     try {
-      await Collecter(messageFetch, randomValue, time_1);
+      await Collecter(this.client, messageFetch, randomValue, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

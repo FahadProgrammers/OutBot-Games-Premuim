@@ -6,4 +6,4 @@ const schema2 = new mongoose_1.Schema({
     statsall: { type: Number, required: true, default: 0 },
     commands: { type: Map, of: Number, default: {} }
 });
-exports.default = (0, mongoose_1.model)("ServerUsedStats", schema2);
+exports.default = (0, mongoose_1.model)("ServerUsedStats-prem", schema2);

@@ -5,8 +5,8 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import profile from "../../utils/functions/Profile";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class help extends Command {
   constructor(client: CustomClient) {
@@ -19,20 +19,46 @@ export default class help extends Command {
     });
   }
   async execute(message: Message) {
-    const waitembed = mainembed("يرجى الإنتضار...", "Profile", "Profile");
+    if(!message.guild) return;
+
+    const waitembed = await BaseEmbed(
+      this.client,
+      message.guild,
+      {
+        line: false,
+        title: "يرجى الإنتضار...",
+        footer: "Profile",
+        fields: "Profile",
+      },
+      "Base"
+    );
+    if(waitembed) {
     const msg = await message.reply({
       embeds: [waitembed],
     });
-
-    const profileembed = mainembed("البروفايل الخاص بك.", "Profile", "Profile");
-    const profileBuffer = (await profile(
-      message
-    )) as unknown as AttachmentBuilder;
+  
+    const profileembed = await BaseEmbed(
+      this.client,
+      message.guild,
+      {
+        line: false,
+        title: "البروفايل الخاص بك.",
+        footer: "Profile",
+        fields: "Profile",
+      },
+      "Base"
+    );
+    let mention = message.mentions.users.first() || message.author;
+   
+    const profileBuffer = (await profile(message, mention)) as unknown as AttachmentBuilder;
+    if(profileembed) {
     profileembed.setImage("attachment://file.jpg");
-
+  
     await msg.edit({
       embeds: [profileembed],
       files: [profileBuffer],
     });
   }
+}
+}  
 }

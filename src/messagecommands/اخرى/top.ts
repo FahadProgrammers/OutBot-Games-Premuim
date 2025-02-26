@@ -7,7 +7,6 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class top extends Command {
@@ -26,7 +25,8 @@ export default class top extends Command {
         return;
       }
 
-      const embed = BaseEmbed(
+      const embed = await BaseEmbed(
+        this.client,
         message.guild,
         {
           title: "لوحة التوب",

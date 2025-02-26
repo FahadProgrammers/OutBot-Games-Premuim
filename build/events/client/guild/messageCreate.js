@@ -77,7 +77,7 @@ class MessageCommandHandler extends Events_1.default {
                                 }
                                 if (bestMatch.distance <= 2) {
                                     if (message.guild) {
-                                        const Embed = (0, BaseEmbed_1.default)(message.guild, {
+                                        const Embed = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
                                             title: "الأمر غير صحيح!",
                                             des: `هل الامر الذي **تقصده** هو: \`${bestMatch.word} \` `,
                                             line: true,
@@ -128,87 +128,75 @@ class MessageCommandHandler extends Events_1.default {
                                 setTimeout(function () {
                                     timestamps.delete(message.author.id);
                                 }, cooldownAmount);
-                                try {
-                                    const findRoleEvent = yield SchemaEvent_1.default.findOne({
-                                        guildId: (_d = message.guild) === null || _d === void 0 ? void 0 : _d.id,
-                                        channelId: message.channel.id,
-                                    });
-                                    const findCommandDisable = yield SchemaCommandControl_1.default.findOne({
-                                        guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id
-                                    });
-                                    yield SchemaServerUsedStats_1.default.findOneAndUpdate({
-                                        guildId: (_f = message.guild) === null || _f === void 0 ? void 0 : _f.id,
-                                    }, {
-                                        $inc: { statsall: 1, [`commands.${command.name}`]: 1 }
-                                    }, {
-                                        upsert: true, new: true
-                                    });
-                                    if (findCommandDisable) {
-                                        if (findCommandDisable.command.includes('all')) {
-                                            return;
-                                        }
-                                        else if (findCommandDisable.command.includes('one')) {
-                                            if (command.category === Category_1.default.فرديه) {
-                                                return;
-                                            }
-                                        }
-                                        else if (findCommandDisable.command.includes('two')) {
-                                            if (command.category === Category_1.default.ثنائيه) {
-                                                return;
-                                            }
-                                        }
-                                        else if (findCommandDisable.command.includes('three')) {
-                                            if (command.category === Category_1.default.مجموعه) {
-                                                return;
-                                            }
-                                        }
-                                        else if (findCommandDisable.command.includes('all')) {
-                                            return;
-                                        }
-                                        else if (findCommandDisable.command.includes(command.name)) {
+                                const findRoleEvent = yield SchemaEvent_1.default.findOne({
+                                    guildId: (_d = message.guild) === null || _d === void 0 ? void 0 : _d.id,
+                                    channelId: message.channel.id,
+                                });
+                                const findCommandDisable = yield SchemaCommandControl_1.default.findOne({
+                                    guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id
+                                });
+                                yield SchemaServerUsedStats_1.default.findOneAndUpdate({
+                                    guildId: (_f = message.guild) === null || _f === void 0 ? void 0 : _f.id,
+                                }, {
+                                    $inc: { statsall: 1, [`commands.${command.name}`]: 1 }
+                                }, {
+                                    upsert: true, new: true
+                                });
+                                if (findCommandDisable) {
+                                    if (findCommandDisable.command.includes('all')) {
+                                        return;
+                                    }
+                                    else if (findCommandDisable.command.includes('one')) {
+                                        if (command.category === Category_1.default.فرديه) {
                                             return;
                                         }
                                     }
-                                    if (findRoleEvent) {
-                                        const findRole = (_g = message.member) === null || _g === void 0 ? void 0 : _g.roles.cache.some((role) => findRoleEvent === null || findRoleEvent === void 0 ? void 0 : findRoleEvent.roleId.includes(role.id));
-                                        if (!findRole) {
-                                            if (findRoleEvent.command === "all") {
+                                    else if (findCommandDisable.command.includes('two')) {
+                                        if (command.category === Category_1.default.ثنائيه) {
+                                            return;
+                                        }
+                                    }
+                                    else if (findCommandDisable.command.includes('three')) {
+                                        if (command.category === Category_1.default.مجموعه) {
+                                            return;
+                                        }
+                                    }
+                                    else if (findCommandDisable.command.includes('all')) {
+                                        return;
+                                    }
+                                    else if (findCommandDisable.command.includes(command.name)) {
+                                        return;
+                                    }
+                                }
+                                if (findRoleEvent) {
+                                    const findRole = (_g = message.member) === null || _g === void 0 ? void 0 : _g.roles.cache.some((role) => findRoleEvent === null || findRoleEvent === void 0 ? void 0 : findRoleEvent.roleId.includes(role.id));
+                                    if (!findRole) {
+                                        if (findRoleEvent.command === "all") {
+                                            return;
+                                        }
+                                        else if (findRoleEvent.command === 'one') {
+                                            if (command.category === Category_1.default.فرديه) {
                                                 return;
                                             }
-                                            else if (findRoleEvent.command === 'one') {
-                                                if (command.category === Category_1.default.فرديه) {
-                                                    return;
-                                                }
-                                                else {
-                                                    yield command.execute(message);
-                                                }
-                                            }
-                                            else if (findRoleEvent.command === 'two') {
-                                                if (command.category === Category_1.default.ثنائيه) {
-                                                    return;
-                                                }
-                                                else {
-                                                    yield command.execute(message);
-                                                }
+                                            else {
+                                                yield command.execute(message);
                                             }
                                         }
-                                        else {
-                                            yield command.execute(message);
+                                        else if (findRoleEvent.command === 'two') {
+                                            if (command.category === Category_1.default.ثنائيه) {
+                                                return;
+                                            }
+                                            else {
+                                                yield command.execute(message);
+                                            }
                                         }
                                     }
                                     else {
                                         yield command.execute(message);
                                     }
                                 }
-                                catch (err) {
-                                    console.log("err help sos", err);
-                                    message.reply({
-                                        embeds: [
-                                            new discord_js_1.EmbedBuilder()
-                                                .setColor("Red")
-                                                .setDescription("❌ حدث خطأ ."),
-                                        ],
-                                    });
+                                else {
+                                    yield command.execute(message);
                                 }
                             }
                         }
@@ -216,7 +204,14 @@ class MessageCommandHandler extends Events_1.default {
                 }
             }
             catch (err) {
-                console.error("An error occurred in the message event:", err);
+                console.log("err help sos", err);
+                message.reply({
+                    embeds: [
+                        new discord_js_1.EmbedBuilder()
+                            .setColor("Red")
+                            .setDescription(`❌ قد واجتنها مشكله: ${err.message}`),
+                    ],
+                });
             }
         });
     }

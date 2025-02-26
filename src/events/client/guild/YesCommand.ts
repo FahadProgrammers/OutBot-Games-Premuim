@@ -5,7 +5,6 @@ import {
   } from "discord.js";
   import CustomClient from "../../../base/classes/CustomClient";
   import Event from "../../../base/classes/Events";
-  import mainembed from "../../../utils/embeds/mainEmbed";
   
   export default class CommandHandler extends Event {
     constructor(client: CustomClient) {

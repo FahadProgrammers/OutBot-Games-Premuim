@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Events_1 = __importDefault(require("../../../base/classes/Events"));
-const mainEmbed_1 = __importDefault(require("../../../utils/embeds/mainEmbed"));
+const BaseEmbed_1 = __importDefault(require("../../../utils/embeds/BaseEmbed"));
 class CommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
@@ -31,19 +31,30 @@ class CommandHandler extends Events_1.default {
                 yield interaction.deferReply({
                     ephemeral: true,
                 });
-                const emb = (0, mainEmbed_1.default)(`
-                <:Arrow1:1299711671052402718> Devices Theme | مظهر الاجهزه
-
-<:emoji_7:1300911919410188288> **0** - لاعب جديد
-<:emoji_12:1300918782369337415> **50** - لاعب عادي
-<:emoji_9:1300913649589944330>  **100** - لاعب فنان
-<:emoji_11:1300914268585328761> **200** - لاعب رهيب
-<:emoji_10:1300914252605030512> **400** - لاعب محترف
-<:emoji_12:1300914637205667870> **600** - لاعب اسطوري
-<:king:1343372191487492127> **1000** - ملك الالعاب`, "Rank", "Rank");
-                yield interaction.editReply({
-                    embeds: [emb],
-                });
+                if (!interaction.guild)
+                    return;
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    line: false,
+                    title: "Devices Theme | مظهر الاجهزه",
+                    footer: "Rank",
+                    des: `
+            <:Arrow1:1299711671052402718> Devices Theme | مظهر الاجهزه
+      
+            <:emoji_7:1300911919410188288> **0** - لاعب جديد
+            <:emoji_12:1300918782369337415> **50** - لاعب عادي
+            <:emoji_9:1300913649589944330>  **100** - لاعب فنان
+            <:emoji_11:1300914268585328761> **200** - لاعب رهيب
+            <:emoji_10:1300914252605030512> **400** - لاعب محترف
+            <:emoji_12:1300914637205667870> **600** - لاعب اسطوري
+            <:king:1343372191487492127> **1000** - ملك الالعاب
+          `,
+                    fields: "Rank"
+                }, "Base");
+                if (emb) {
+                    yield interaction.editReply({
+                        embeds: [emb],
+                    });
+                }
             }
         });
     }

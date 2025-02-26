@@ -38,7 +38,7 @@ class help extends Command_1.default {
                     content: `${emojis_1.default.false} | ?`,
                 });
             }
-            const Embed = (0, BaseEmbed_1.default)(interaction.guild, {
+            const Embed = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                 title: "قائمة الاوامر",
                 des: `
       <:Picsart_241028_170653120:1303325780704759868> - **قائمة الاوامر**:

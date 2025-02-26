@@ -17,8 +17,6 @@ const Command_1 = __importDefault(require("../../base/classes/Command"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
 const SchemaEvent_1 = __importDefault(require("../../schema/SchemaEvent"));
 const SchemaChannel_1 = __importDefault(require("../../schema/SchemaChannel"));
-const SchemaCommandControl_1 = __importDefault(require("../../schema/SchemaCommandControl"));
-const mainEmbed_1 = __importDefault(require("../../utils/embeds/mainEmbed"));
 const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class Test extends Command_1.default {
@@ -74,7 +72,7 @@ class Test extends Command_1.default {
     }
     execute(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g;
+            var _a, _b, _c, _d, _e, _f;
             yield interaction.deferReply({
                 ephemeral: true,
             });
@@ -93,24 +91,36 @@ class Test extends Command_1.default {
                     guildId: (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id,
                 });
                 if (!findChannel) {
-                    yield interaction.editReply({
-                        embeds: [
-                            (0, mainEmbed_1.default)(`${emojis_1.default.false} | تأكد من القناه!`, "System", "System"),
-                        ],
-                    });
-                    return;
+                    const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                        title: "خطأ",
+                        des: `${emojis_1.default.false} | تأكد من القناة!`,
+                        line: true,
+                        footer: "Error",
+                        fields: "لا يوجد سجل لهذه القناة",
+                    }, "Error");
+                    if (emb) {
+                        return interaction.editReply({
+                            embeds: [emb],
+                        });
+                    }
                 }
                 const findCommand = this.client.messagecommands.some((command2) => command2.name === command);
                 if (!findCommand &&
                     command !== "one" &&
                     command !== "two" &&
                     command !== "all") {
-                    yield interaction.editReply({
-                        embeds: [
-                            (0, mainEmbed_1.default)(`${emojis_1.default.false} | تأكد من الامر المختار!`, "System", "System"),
-                        ],
-                    });
-                    return;
+                    const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                        title: "خطأ",
+                        des: `${emojis_1.default.false} | تأكد من الامر المختار!`,
+                        line: true,
+                        footer: "Error",
+                        fields: "الأمر غير موجود أو غير صالح",
+                    }, "Error");
+                    if (emb) {
+                        return interaction.editReply({
+                            embeds: [emb],
+                        });
+                    }
                 }
                 const findData = yield SchemaEvent_1.default.findOne({
                     guildId: (_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.id,
@@ -119,12 +129,18 @@ class Test extends Command_1.default {
                     command: command,
                 });
                 if (findData) {
-                    yield interaction.editReply({
-                        embeds: [
-                            (0, mainEmbed_1.default)(`${emojis_1.default.false} | متوفر بالبيانات بلفعل!`, "System", "System"),
-                        ],
-                    });
-                    return;
+                    const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                        title: "خطأ",
+                        des: `${emojis_1.default.false} | هذا السجل موجود بالفعل!`,
+                        line: true,
+                        footer: "Error",
+                        fields: "السجل موجود في البيانات مسبقًا",
+                    }, "Error");
+                    if (emb) {
+                        return interaction.editReply({
+                            embeds: [emb],
+                        });
+                    }
                 }
                 new SchemaEvent_1.default({
                     guildId: (_d = interaction.guild) === null || _d === void 0 ? void 0 : _d.id,
@@ -132,11 +148,18 @@ class Test extends Command_1.default {
                     roleId: role === null || role === void 0 ? void 0 : role.id,
                     command: command,
                 }).save();
-                yield interaction.editReply({
-                    embeds: [
-                        (0, mainEmbed_1.default)(`${emojis_1.default.true} | تم بنجاح تنفيذ العمليه`, "System", "System"),
-                    ],
-                });
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "نجاح",
+                    des: `${emojis_1.default.true} | تم بنجاح تنفيذ العملية`,
+                    line: true,
+                    footer: "Success",
+                    fields: "تم إضافة السجل بنجاح",
+                }, "Success");
+                if (emb) {
+                    yield interaction.editReply({
+                        embeds: [emb],
+                    });
+                }
             }
             else if (subCommand === "remove") {
                 const select_1 = interaction.options.getString("select");
@@ -149,163 +172,53 @@ class Test extends Command_1.default {
                         guildId: (_e = interaction.guild) === null || _e === void 0 ? void 0 : _e.id,
                     });
                     if (!findChannel) {
-                        yield interaction.editReply({
-                            embeds: [
-                                (0, mainEmbed_1.default)(`${emojis_1.default.false} | تأكد من القناه!`, "System", "System"),
-                            ],
-                        });
-                        return;
+                        const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "خطأ",
+                            des: `${emojis_1.default.false} | تأكد من القناة!`,
+                            line: true,
+                            footer: "Error",
+                            fields: "القناة غير موجودة في البيانات",
+                        }, "Error");
+                        if (emb) {
+                            return interaction.editReply({
+                                embeds: [emb],
+                            });
+                        }
                     }
-                    const findCommand = this.client.messagecommands.some((command2) => command2.name === findChannel.command);
+                    const findCommand = this.client.messagecommands.some((command2) => command2.name === (findChannel === null || findChannel === void 0 ? void 0 : findChannel.command));
                     if (!findCommand &&
-                        findChannel.command !== "one" &&
-                        findChannel.command !== "two" &&
-                        findChannel.command !== "all") {
-                        yield interaction.editReply({
-                            embeds: [
-                                (0, mainEmbed_1.default)(`${emojis_1.default.false} | تأكد من الامر المختار!`, "System", "System"),
-                            ],
-                        });
-                        return;
+                        (findChannel === null || findChannel === void 0 ? void 0 : findChannel.command) !== "one" &&
+                        (findChannel === null || findChannel === void 0 ? void 0 : findChannel.command) !== "two" &&
+                        (findChannel === null || findChannel === void 0 ? void 0 : findChannel.command) !== "all") {
+                        const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "خطأ",
+                            des: `${emojis_1.default.false} | تأكد من الأمر المختار!`,
+                            line: true,
+                            footer: "Error",
+                            fields: "الأمر غير صالح",
+                        }, "Error");
+                        if (emb) {
+                            return interaction.editReply({
+                                embeds: [emb],
+                            });
+                        }
                     }
-                    const findData = yield SchemaEvent_1.default.findOne({
+                    yield SchemaEvent_1.default.deleteOne({
                         guildId: (_f = interaction.guild) === null || _f === void 0 ? void 0 : _f.id,
                         channelId: split[0],
                         command: split[2],
                     });
-                    if (!findData) {
-                        yield interaction.editReply({
-                            embeds: [
-                                (0, mainEmbed_1.default)(`${emojis_1.default.false} | غير متوفر بالبيانات بلفعل!`, "System", "System"),
-                            ],
-                        });
-                        return;
-                    }
-                    yield SchemaEvent_1.default.deleteOne({
-                        guildId: (_g = interaction.guild) === null || _g === void 0 ? void 0 : _g.id,
-                        channelId: split[0],
-                        command: split[2],
-                    });
-                    yield interaction.editReply({
-                        embeds: [
-                            (0, mainEmbed_1.default)(`${emojis_1.default.true} | تم بنجاح تنفيذ العمليه`, "System", "System"),
-                        ],
-                    });
-                }
-            }
-            else if (subCommand === "control") {
-                const command = interaction.options.getString('command-select');
-                if (command === "") {
-                    const BaseEmbed1 = (0, BaseEmbed_1.default)(interaction.guild, {
-                        title: "مهلا",
-                        des: "هاذا الأمر غير مسموح لك بإستخدامه!",
+                    const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                        title: "نجاح",
+                        des: `${emojis_1.default.true} | تم بنجاح تنفيذ العملية`,
                         line: true,
-                        footer: "Error.",
-                        fields: "Error."
-                    }, "Error");
-                    if (BaseEmbed1) {
-                        return interaction.editReply({
-                            embeds: [BaseEmbed1]
-                        });
-                    }
-                }
-                const disabled = interaction.options.getBoolean('disabled');
-                let find = yield SchemaCommandControl_1.default.findOne({
-                    guildId: interaction.guildId,
-                });
-                if (disabled && command) {
-                    find = yield SchemaCommandControl_1.default.findOne({
-                        guildId: interaction.guildId,
-                    });
-                    if (find === null || find === void 0 ? void 0 : find.command.includes(command)) {
-                        const BaseEmbed1 = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "مهلا",
-                            des: "الأمر بلفعل مغلق",
-                            line: true,
-                            footer: "Error.",
-                            fields: "Error."
-                        }, "Error");
-                        if (BaseEmbed1) {
-                            return interaction.editReply({
-                                embeds: [BaseEmbed1]
-                            });
-                        }
-                    }
-                    else {
-                        if (find) {
-                            find.command.push(command);
-                            yield find.save();
-                        }
-                        else {
-                            new SchemaCommandControl_1.default({
-                                guildId: interaction.guildId,
-                                command: [command]
-                            }).save();
-                        }
-                    }
-                    const ddfind = yield SchemaCommandControl_1.default.findOne({
-                        guildId: interaction.guildId,
-                    });
-                    let content = yield (ddfind === null || ddfind === void 0 ? void 0 : ddfind.command.map((data) => {
-                        if (data === "all") {
-                            return "جميع الاوامر";
-                        }
-                        else if (data === "one") {
-                            return "الاوامر الفرديه";
-                        }
-                        else if (data === 'two') {
-                            return "الاوامر الثنائيه";
-                        }
-                        else if (data === "three") {
-                            return "اوامر المجموعه";
-                        }
-                        else {
-                            return data;
-                        }
-                    }));
-                    const BaseEmbed11 = yield (0, BaseEmbed_1.default)(interaction.guild, {
-                        title: "تم بنجاح!",
-                        des: `${emojis_1.default.true} | **تم بنجاح **تعطيل الأمر\n\nالأوامر المُعطله: ${emojis_1.default.close} **${content === null || content === void 0 ? void 0 : content.join(",")}** ${emojis_1.default.open}`,
-                        line: true,
-                        footer: "Success.",
-                        fields: "Success."
+                        footer: "Success",
+                        fields: "تم إزالة السجل بنجاح",
                     }, "Success");
-                    if (BaseEmbed11) {
-                        return yield interaction.editReply({
-                            embeds: [BaseEmbed11]
+                    if (emb) {
+                        yield interaction.editReply({
+                            embeds: [emb],
                         });
-                    }
-                }
-                else {
-                    if (!find) {
-                        const BaseEmbed1 = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "مهلا",
-                            des: "الأمر** غير **مفعل** ل إغلاقه**",
-                            line: true,
-                            footer: "Error.",
-                            fields: "Error."
-                        }, "Error");
-                        if (BaseEmbed1) {
-                            return interaction.editReply({
-                                embeds: [BaseEmbed1]
-                            });
-                        }
-                    }
-                    else {
-                        find.command = find.command.filter((c) => c !== command);
-                        yield find.save();
-                        const BaseEmbed11 = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "تم بنجاح!",
-                            des: `${emojis_1.default.true} | **تم بنجاح إعادة **تشغيل الأمر`,
-                            line: true,
-                            footer: "Success.",
-                            fields: "Success."
-                        }, "Success");
-                        if (BaseEmbed11) {
-                            return interaction.editReply({
-                                embeds: [BaseEmbed11]
-                            });
-                        }
                     }
                 }
             }

@@ -17,7 +17,6 @@ const Command_1 = __importDefault(require("../../base/classes/Command"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
 const SchemaPrefix_1 = __importDefault(require("../../schema/SchemaPrefix"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
-const warnembed_1 = __importDefault(require("../../utils/embeds/warnembed"));
 const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
 class prefix extends Command_1.default {
     constructor(client) {
@@ -58,7 +57,7 @@ class prefix extends Command_1.default {
                     const prefix = options.getString("delprefix");
                     const prefixx = prefix === null || prefix === void 0 ? void 0 : prefix.split("_");
                     if (interaction.guild && prefixx) {
-                        const emb = (0, BaseEmbed_1.default)(interaction.guild, {
+                        const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                             title: "deleteprefix",
                             des: `${emojis_1.default.true} | تم بنجاح إزالة البادئه ( \` ${prefixx[0]} \` )`,
                             line: true,
@@ -66,38 +65,45 @@ class prefix extends Command_1.default {
                             fields: `حذف بادئه`,
                         }, "Success");
                         if (emb) {
-                            const embnotfound = (0, warnembed_1.default)(`${emojis_1.default.false} | لا اتمكن من العثور بلفعل على بادئه مخصصه`);
-                            yield interaction.deferReply({
-                                ephemeral: true,
-                            });
-                            if (!((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id)) {
-                                return interaction.editReply({
-                                    content: `${emojis_1.default.false} | ?`,
+                            const embnotfound = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                                des: `${emojis_1.default.false} | لا اتمكن من العثور بلفعل على بادئه مخصصه`,
+                                line: false,
+                                footer: "Error.",
+                                fields: "Error.",
+                            }, "Erorr");
+                            if (embnotfound) {
+                                yield interaction.deferReply({
+                                    ephemeral: true,
                                 });
-                            }
-                            if (prefixx) {
-                                let f = (yield SchemaPrefix_1.default.findOne({
-                                    guildId: interaction.guild.id,
-                                    channelId: prefixx[1],
-                                })) || null;
-                                const find = f === null || f === void 0 ? void 0 : f.prefix.find((data) => data === prefixx[0]);
-                                if (f && find) {
-                                    f.prefix = f.prefix.filter((channelId) => channelId !== prefixx[0]);
-                                    yield (f === null || f === void 0 ? void 0 : f.save());
-                                    if (f.prefix.length === 0) {
-                                        console.log("فاضي");
-                                        f.deleteOne();
-                                    }
-                                }
-                                else {
-                                    yield interaction.editReply({
-                                        embeds: [embnotfound],
+                                if (!((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id)) {
+                                    return interaction.editReply({
+                                        content: `${emojis_1.default.false} | ?`,
                                     });
-                                    return;
                                 }
-                                yield interaction.editReply({
-                                    embeds: [emb],
-                                });
+                                if (prefixx) {
+                                    let f = (yield SchemaPrefix_1.default.findOne({
+                                        guildId: interaction.guild.id,
+                                        channelId: prefixx[1],
+                                    })) || null;
+                                    const find = f === null || f === void 0 ? void 0 : f.prefix.find((data) => data === prefixx[0]);
+                                    if (f && find) {
+                                        f.prefix = f.prefix.filter((channelId) => channelId !== prefixx[0]);
+                                        yield (f === null || f === void 0 ? void 0 : f.save());
+                                        if (f.prefix.length === 0) {
+                                            console.log("فاضي");
+                                            f.deleteOne();
+                                        }
+                                    }
+                                    else {
+                                        yield interaction.editReply({
+                                            embeds: [embnotfound],
+                                        });
+                                        return;
+                                    }
+                                    yield interaction.editReply({
+                                        embeds: [emb],
+                                    });
+                                }
                             }
                         }
                     }
@@ -107,7 +113,7 @@ class prefix extends Command_1.default {
                     const channel = options.getString('channel');
                     if (channel) {
                         if (interaction.guild) {
-                            const emb = (0, BaseEmbed_1.default)(interaction.guild, {
+                            const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                                 title: "setprefix",
                                 des: `${emojis_1.default.true} | تم بنجاح تعيين البادئه ( \` ${prefix} \` )`,
                                 line: false,

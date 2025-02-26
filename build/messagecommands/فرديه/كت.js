@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const kt_1 = __importDefault(require("../../utils/games/kt"));
+const kt_json_1 = __importDefault(require("../../utils/games/kt.json"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class كت extends MessageCreate_1.default {
     constructor(client) {
@@ -28,11 +28,11 @@ class كت extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const randomword_1 = Math.floor(Math.random() * kt_1.default.length);
-            const randomword_2 = kt_1.default[randomword_1];
+            const randomword_1 = Math.floor(Math.random() * kt_json_1.default.words.length);
+            const randomword_2 = kt_json_1.default.words[randomword_1];
             if (!message.guild)
                 return;
-            const base = (0, BaseEmbed_1.default)(message.guild, {
+            const base = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
                 des: `## ${randomword_2}`,
                 line: false,
                 footer: "كت",

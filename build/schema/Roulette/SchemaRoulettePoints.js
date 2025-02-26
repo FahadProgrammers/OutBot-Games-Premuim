@@ -6,4 +6,4 @@ const schema2 = new mongoose_1.Schema({
     userId: { type: String, required: true },
     p: { type: Number, required: true }
 });
-exports.default = (0, mongoose_1.model)("RoulettePointsTester", schema2);
+exports.default = (0, mongoose_1.model)("roulette-points-prem", schema2);

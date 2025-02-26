@@ -5,8 +5,6 @@ import {
 import CustomClient from "../../base/classes/CustomClient";
 import Event from "../../base/classes/Events";
 import Command from "../../base/classes/Command";
-import mainembedWithUser from "../../utils/embeds/mainembedWithUser";
-import mainembed from "../../utils/embeds/mainEmbed";
 import schema_2 from "../../schema/SchemaPrefix";
 import prefix from "../../schema/SchemaPrefix";
 import Category from "../../base/enums/Category";

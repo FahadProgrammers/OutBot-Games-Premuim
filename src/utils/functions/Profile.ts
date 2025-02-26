@@ -1,16 +1,16 @@
-import { Message, parseEmoji } from "discord.js";
+import { Message, MessageMentions, parseEmoji, User } from "discord.js";
 import schema from "../../schema/SchemaUsers";
 import { profileImage } from "discord-arts";
 import rank from "./rank";
 import axios from "axios";
 
-async function profile(message: Message) {
+async function profile(message: Message, mention: User) {
   if (!message.guild) {
     return await message.reply({
       content: "?",
     });
   }
-  const user = message.author;
+  const user = mention || message.author;
   const schema_2 = await schema.findOne({
     guildId: message.guild?.id,
     userId: user?.id,

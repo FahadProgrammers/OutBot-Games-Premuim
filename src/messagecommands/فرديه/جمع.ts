@@ -8,12 +8,9 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
-import word from "../../utils/games/jm3";
+import word from "../../utils/games/words.jm3.json";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
-import warningembed_1 from "../../utils/embeds/warnembed";
-import mainembedNodetils from "../../utils/embeds/mainembedNodetils";
 import emoji from "../../utils/functions/emojis";
 import canvas, { loadImage } from "canvas";
 import path from "path";
@@ -32,9 +29,12 @@ export default class جمع extends Command {
   }
 
   async execute(message: Message) {
-    const randomKey =
-      Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
-    const randomValue = word[randomKey];
+    const randomKey = Object.keys(word.words)[
+      Math.floor(Math.random() * Object.keys(word.words).length)
+    ];
+    
+    const randomValue = word.words[randomKey as keyof typeof word.words];
+        
 
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
@@ -76,7 +76,7 @@ export default class جمع extends Command {
     const time_1 = Date.now();
     let status = false;
     try {
-      await Collecter(messageFetch, randomValue, time_1);
+      await Collecter(this.client, messageFetch, randomValue, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

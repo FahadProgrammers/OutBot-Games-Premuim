@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const mainEmbed_1 = __importDefault(require("../../utils/embeds/mainEmbed"));
 const Profile_1 = __importDefault(require("../../utils/functions/Profile"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class help extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -28,17 +28,34 @@ class help extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const waitembed = (0, mainEmbed_1.default)("يرجى الإنتضار...", "Profile", "Profile");
-            const msg = yield message.reply({
-                embeds: [waitembed],
-            });
-            const profileembed = (0, mainEmbed_1.default)("البروفايل الخاص بك.", "Profile", "Profile");
-            const profileBuffer = (yield (0, Profile_1.default)(message));
-            profileembed.setImage("attachment://file.jpg");
-            yield msg.edit({
-                embeds: [profileembed],
-                files: [profileBuffer],
-            });
+            if (!message.guild)
+                return;
+            const waitembed = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
+                line: false,
+                title: "يرجى الإنتضار...",
+                footer: "Profile",
+                fields: "Profile",
+            }, "Base");
+            if (waitembed) {
+                const msg = yield message.reply({
+                    embeds: [waitembed],
+                });
+                const profileembed = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
+                    line: false,
+                    title: "البروفايل الخاص بك.",
+                    footer: "Profile",
+                    fields: "Profile",
+                }, "Base");
+                let mention = message.mentions.users.first() || message.author;
+                const profileBuffer = (yield (0, Profile_1.default)(message, mention));
+                if (profileembed) {
+                    profileembed.setImage("attachment://file.jpg");
+                    yield msg.edit({
+                        embeds: [profileembed],
+                        files: [profileBuffer],
+                    });
+                }
+            }
         });
     }
 }

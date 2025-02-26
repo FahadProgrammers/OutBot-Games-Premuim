@@ -9,10 +9,8 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import randomwordSuccess from "../../utils/games/success";
 import randomwords from "../../utils/games/words.json";
-import warningembed_1 from "../../utils/embeds/warnembed";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
 import emoji from "../../utils/functions/emojis";
@@ -79,7 +77,7 @@ export default class رتب extends Command {
     let status = false;
 
     try {
-      await Collecter(messageFetch, randomKey, time_1);
+      await Collecter(this.client, messageFetch, randomKey, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

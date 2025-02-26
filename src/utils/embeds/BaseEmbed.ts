@@ -1,91 +1,95 @@
-import { EmbedBuilder, Guild, ImageURLOptions, parseEmoji } from "discord.js";
+import { EmbedBuilder, Guild, ColorResolvable } from "discord.js";
 import utils from "../../utils/utils";
-import axios from "axios";
 import emoji from "../functions/emojis";
+import SchemaEmbed from "../../schema/SchemaEmbedColor";
+import CustomClient from "../../base/classes/CustomClient";
 
 interface EmbedObject {
-title?: string;
-des?: string;
-line: boolean;
-footer?: string | null;
-fields?: string | null;
-};
+    title?: string;
+    des?: string;
+    line: boolean;
+    footer?: string | null;
+    fields?: string | null;
+}
 
-export default function BaseEmbed(GuildiObject: Guild, EmbedObject: EmbedObject, embedType: string) {
+export default async function BaseEmbed(
+    client: CustomClient,
+    GuildiObject: Guild,
+    EmbedObject: EmbedObject,
+    embedType: string
+) {
     try {
-    let Embed = new EmbedBuilder()
-    let des = EmbedObject.des;
-    let fields = EmbedObject.fields;
-    let footer = EmbedObject.footer;
-    let title = EmbedObject.title;
-    let line = EmbedObject.line;
+        let Embed = new EmbedBuilder();
+        let { title, des, line, footer, fields } = EmbedObject;
 
-    if(line === true) {
-        Embed.setImage(utils.Line)
-        } 
-    if(embedType === "Base") {
-        if(EmbedObject.title) {
-            Embed
-.setTitle(`OutBot - Games ${title ? `| ${title}` : ""}`)
+        let color: ColorResolvable = "Red";
+        const find = await SchemaEmbed.findOne({ guildId: GuildiObject.id });
+        if (find) {
+            color = find.embedcolor as ColorResolvable;
         }
-        if(EmbedObject.des) {
-Embed
-.setDescription(des ? des : "ERR")
-}
- Embed
- .setTimestamp()
-.setFooter({
-    text: `OutBot Games - ${footer ? footer : "Bot"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-.setColor('Red')
-.setAuthor({
-    name: `OutBot Games - ${fields ? fields : "Bot"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-const emojiURL = emoji.BaseURL;
-Embed.setThumbnail(emojiURL);
-    } else if(embedType === "Success") {
-        if(EmbedObject.des) {
-            Embed
-            .setDescription(des ? des : "ERR")
-                }
-        Embed
-.setTimestamp()
-.setFooter({
-    text: `OutBot Games - ${footer ? footer : "Game"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-.setColor('Green')
-.setAuthor({
-    name: `OutBot Games - ${fields ? fields : "Game"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-const emojiURL = emoji.trueURL;
-Embed.setThumbnail(emojiURL);
-    } else if(embedType === "Error") {
-        if(EmbedObject.des) {
-            Embed
-            .setDescription(des ? des : "ERR")
-                }
-        Embed
-.setTimestamp()
-.setFooter({
-    text: `OutBot Games - ${footer ? footer : "Game"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-.setColor('Red')
-.setAuthor({
-    name: `OutBot Games - ${fields ? fields : "Game"}`,
-    iconURL: "https://cdn.discordapp.com/attachments/1299697533207183381/1299700733314207775/fgfgdgj.png?ex=671e2822&is=671cd6a2&hm=f577515043ddb9b8ab589271b3f3ff40ab1e701ab5e1dbb863699005282310b2&"
-})
-    
 
-    const emojiURL = emoji.falseURL;
-    Embed.setThumbnail(emojiURL);
+        if (line) {
+            Embed.setImage(utils.Line);
+        }
+
+        switch (embedType) {
+            case "Base":
+                if (title) {
+                    Embed.setTitle(`${GuildiObject.name} - ${title ? `${title}` : ""}`);
+                }
+                if (des) {
+                    Embed.setDescription(des);
+                }
+                Embed.setAuthor({
+                    name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setFooter({
+                    text: `${GuildiObject.name} - ${footer || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setColor(color)
+                .setThumbnail(GuildiObject.iconURL() || emoji.BaseURL)
+                .setTimestamp();
+                break;
+
+            case "Success":
+                Embed.setDescription(des || "ERR")
+                .setColor("Green")
+                .setAuthor({
+                    name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setFooter({
+                    text: `${GuildiObject.name} - ${fields || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setThumbnail(emoji.trueURL)
+                .setTimestamp();
+                break;
+
+            case "Error":
+                Embed.setDescription(des || "ERR")
+                .setColor("Red")
+                .setAuthor({
+                    name: `${GuildiObject.name} - ${fields || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setFooter({
+                    text: `${GuildiObject.name} - ${fields || "Bot"}`,
+                    iconURL: GuildiObject.iconURL() || emoji.BaseURL,
+                })
+                .setThumbnail(emoji.falseURL)
+                .setTimestamp();
+                break;
+
+            default:
+                throw new Error("Invalid embedType provided.");
+        }
+
+        return Embed;
+    } catch (err) {
+        console.error("Error in BaseEmbed:", err);
+        return null;
+    }
 }
-    return Embed;
-} catch(err) {
-console.log('Error of BaseEmbed', err)
-}
-};

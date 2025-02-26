@@ -10,7 +10,6 @@ import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import schema_1 from "../../schema/SchemaPrefix";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
-import warnembed from "../../utils/embeds/warnembed";
 import emoji from "../../utils/functions/emojis";
 
 export default class prefix extends Command {
@@ -62,7 +61,8 @@ export default class prefix extends Command {
     const prefixx = prefix?.split("_");
     
     if(interaction.guild && prefixx) {
-      const emb = BaseEmbed(
+      const emb = await BaseEmbed(
+        this.client,
         interaction.guild,
         {
           title: "deleteprefix",
@@ -74,9 +74,18 @@ export default class prefix extends Command {
         "Success"
       );
       if(emb) {
-    const embnotfound = warnembed(
-      `${emoji.false} | لا اتمكن من العثور بلفعل على بادئه مخصصه`
+    const embnotfound = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+      des: `${emoji.false} | لا اتمكن من العثور بلفعل على بادئه مخصصه`,
+      line: false,
+      footer: "Error.",
+      fields: "Error.",
+      },
+      "Erorr"
     );
+    if(embnotfound) {
     await interaction.deferReply({
       ephemeral: true,
     });
@@ -113,12 +122,15 @@ export default class prefix extends Command {
     }
   }
 }
+}
+    
   } else if(subCommand === "add") {
     const prefix = options.getString("prefix");
     const channel = options.getString('channel');
     if(channel) {
     if(interaction.guild) {
-    const emb = BaseEmbed(
+    const emb = await BaseEmbed(
+      this.client,
       interaction.guild,
       {
         title: "setprefix",

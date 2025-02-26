@@ -31,7 +31,8 @@ export default class CommandHandler extends Event {
       if(!interaction.guild) {
         return console.log("خطا في interaction.guild")
       }
-      const emb = BaseEmbed(
+      const emb = await BaseEmbed(
+        this.client,
         interaction.guild,
         {
           title: `${prefixFind?.prefix.length === 1 ? "بادئة" : "بادئات"} **البوت**`,

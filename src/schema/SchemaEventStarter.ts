@@ -12,4 +12,4 @@ const schema2 = new Schema<SchemaType>({
     commands: { type: Array, required: true }
 });
 
-export default model<SchemaType>("Event-Tester", schema2);
+export default model<SchemaType>("Event-prem", schema2);

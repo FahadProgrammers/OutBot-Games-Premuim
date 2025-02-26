@@ -42,7 +42,7 @@ class ajr extends Command_1.default {
                     content: `${emojis_1.default.false} | ?`,
                 });
             }
-            const Embd = (0, BaseEmbed_1.default)(interaction.guild, {
+            const Embd = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                 title: "Support Server",
                 des: `
 <:1323739617790263326:1341704260483551323> [الدعم الفني](${utils_1.default.SupportServer})

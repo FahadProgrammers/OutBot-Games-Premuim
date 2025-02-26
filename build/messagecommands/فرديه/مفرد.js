@@ -47,7 +47,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const mfrd_1 = __importDefault(require("../../utils/games/mfrd"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
+const words_jm3_json_1 = __importDefault(require("../../utils/games/words.jm3.json"));
 const canvas_1 = __importStar(require("canvas"));
 const path_1 = __importDefault(require("path"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
@@ -63,8 +64,8 @@ class مفرد extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const randomKey = Object.keys(mfrd_1.default)[Math.floor(Math.random() * Object.keys(mfrd_1.default).length)];
-            const randomValue = mfrd_1.default[randomKey];
+            const randomKey = Object.keys(words_jm3_json_1.default.words)[Math.floor(Math.random() * Object.keys(words_jm3_json_1.default.words).length)];
+            const randomValue = words_jm3_json_1.default.words[randomKey];
             const Canvas = canvas_1.default.createCanvas(700, 250);
             const ctx = Canvas.getContext("2d");
             const filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
@@ -90,16 +91,27 @@ class مفرد extends MessageCreate_1.default {
                 .catch((err) => {
                 console.log(err);
             });
-            const messageFetch = yield message.reply({
-                files: [Canvas.toBuffer()],
-            });
-            const time_1 = Date.now();
-            let status = false;
-            try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomKey, time_1);
-            }
-            catch (err) {
-                console.log("Error of Collecter!!");
+            if (!message.guild)
+                return;
+            const base = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
+                line: false,
+                title: "✧ لعبة المفرد ✧",
+                footer: "مفرد الكلمة",
+                fields: `حاول إيجاد المفرد الصحيح لكلمة: **${randomValue}**`,
+            }, "Base");
+            if (base) {
+                const messageFetch = yield message.reply({
+                    files: [Canvas.toBuffer()],
+                    embeds: [base],
+                });
+                const time_1 = Date.now();
+                let status = false;
+                try {
+                    yield (0, MessageCollecter_1.default)(this.client, messageFetch, randomKey, time_1);
+                }
+                catch (err) {
+                    console.log("Error of Collecter!!");
+                }
             }
         });
     }

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../../base/classes/Command"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const mainEmbed_1 = __importDefault(require("../../utils/embeds/mainEmbed"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class event extends Command_1.default {
     constructor(client) {
         super(client, {
@@ -81,16 +81,23 @@ class event extends Command_1.default {
                         content: "❌ | حدث خطأ في تحديد الخادم.",
                     });
                 }
-                const embed = yield (0, mainEmbed_1.default)("يرجى الاختيار ماتريد من الالعاب أدناه");
-                embed.addFields({
-                    name: `تم إضافة:`,
-                    value: `لايوجد`,
-                });
-                yield interaction.editReply({
-                    content: "OutBot Games",
-                    embeds: [embed],
-                    components: rows,
-                });
+                const embed = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "يرجى الاختيار ماتريد من الالعاب أدناه",
+                    footer: "اختر اللعبة التي ترغب بها",
+                    fields: "اختر اللعبة التي ترغب بها",
+                    line: true,
+                }, "Base");
+                if (embed) {
+                    embed.addFields({
+                        name: `تم إضافة:`,
+                        value: `لايوجد`,
+                    });
+                    yield interaction.editReply({
+                        content: "OutBot Games",
+                        embeds: [embed],
+                        components: rows,
+                    });
+                }
             }
             catch (error) {
                 console.error("An unexpected error occurred : of command /push alert", error);

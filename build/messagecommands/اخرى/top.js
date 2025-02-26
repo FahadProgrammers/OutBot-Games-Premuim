@@ -33,7 +33,7 @@ class top extends MessageCreate_1.default {
                 if (!message.guild) {
                     return;
                 }
-                const embed = (0, BaseEmbed_1.default)(message.guild, {
+                const embed = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
                     title: "لوحة التوب",
                     des: `<:number1:1343223920790212638> - **إضهار التوب **الخاص بلسيرفر
 <:number2:1343223935415746621> - **إضهار اعلى اشخاص **يملكون نقاطا 

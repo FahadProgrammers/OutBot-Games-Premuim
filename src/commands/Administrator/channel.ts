@@ -1,5 +1,6 @@
 import {
   ActionRowBuilder,
+  Base,
   ButtonBuilder,
   ButtonStyle,
   ChannelType,
@@ -12,10 +13,8 @@ import Command from "../../base/classes/Command";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import schema_1 from "../../schema/SchemaChannel";
-import mainembed from "../../utils/embeds/mainEmbed";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
 import emoji from "../../utils/functions/emojis";
-import warnembed from "../../utils/embeds/warnembed";
 
 export default class Test extends Command {
   constructor(client: CustomClient) {
@@ -69,12 +68,20 @@ export default class Test extends Command {
       })) || null;
     const Targetchannel = interaction.options.getString("remove");
     const find = data?.channelId.find((data) => data === Targetchannel);
-    const emb2 = mainembed(
-      `❌ تاكد من اختيار عنصر صحيح او متوفر بقاعده البيانات `,
-      `System`,
-      `System`
+    const emb2 = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+        title: "حدث خطا!",
+        des: `❌ تاكد من اختيار عنصر صحيح او متوفر بقاعده البيانات `,
+        line: false,
+        footer: "Error.",
+        fields: "Error."
+      },
+      "Base"
     );
 
+    if(emb2) {
     if (Targetchannel === "" || !find) {
       await interaction.editReply({
         embeds: [emb2],
@@ -86,7 +93,8 @@ export default class Test extends Command {
       await data?.save();
     }
     if(interaction.guild) {
-      const emb = BaseEmbed(
+      const emb = await BaseEmbed(
+        this.client,
         interaction.guild,
         {
           title: "deletechannel",
@@ -104,13 +112,15 @@ export default class Test extends Command {
     });
   }
 }
-  } else if(subCommand === "add") {
+  } 
+} else if(subCommand === "add") {
     const channel = interaction.options.getChannel("channel") as TextChannel;
     const schema_2 =
       (await schema_1.findOne({
         guildId: interaction.guild?.id,
       })) || null;
-    const emb = BaseEmbed(
+    const emb = await BaseEmbed(
+      this.client,
       interaction.guild,
       {
         title: "setchannel",
@@ -122,31 +132,53 @@ export default class Test extends Command {
       "Success"
     );
     if(emb) {
-    const emb2 = warnembed(
-      `${emoji.false} | هاذي القناه مضافه بلفعل`,
-      `Error Channel`,
-      `Error Channel`
+    const emb2 = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+      des: `${emoji.false} | هاذي القناه مضافه بلفعل`,
+      line: false,
+      footer: 'Error.',
+      fields: "Error."
+      },
+      "Error"
     );
-    const emb2Full = warnembed(
-      `
-        ${emoji.false} | مهلا لقد وصلت الحد الاقصى ل القنوات **${schema_2?.channelId.length} **
-        للمزيد اشترك في [النسخه المطوره](https://discord.com/channels/1198628254043607070/1256976756485652480) 
-          `,
-      `Full Channels`,
-      `Full Channels`
+    const emb2Full = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+      des: `
+      ${emoji.false} | مهلا لقد وصلت الحد الاقصى ل القنوات **${schema_2?.channelId.length} **
+      للمزيد اشترك في [النسخه المطوره](https://discord.com/channels/1198628254043607070/1256976756485652480) 
+        `,
+      line: false,
+      footer: 'Error.',
+      fields: "Error."
+      },
+      "Error"
     );
-    if (schema_2) {
-      if (schema_2?.channelId.length === 5) {
-        await interaction.editReply({
-          embeds: [emb2Full],
-        });
-        return;
-      }
+    if (schema_2 && emb2) {
       if (schema_2?.channelId.includes(channel.id)) {
         await interaction.editReply({
           embeds: [emb2],
         });
         return;
+      }
+      if (!channel.permissionsFor(interaction.client.user)?.has(["ViewChannel", "SendMessages"])) {
+          const emb2Full =  await BaseEmbed(
+            this.client,
+            interaction.guild,
+            {
+            des: `⚠️ لا يمكنني رؤية هذه القناة أو الكتابة بها. تأكد من إعطائي الأذونات الصحيحة.`,
+            line: false,
+            footer: 'Error.',
+            fields: "Error."
+            },
+            "Error"
+          );
+          if(emb2Full) {
+    return await interaction.editReply({ embeds: [emb2Full] });
+}
       }
       schema_2?.channelId.push(channel.id);
       schema_2.dateend = new Date();
@@ -155,6 +187,23 @@ export default class Test extends Command {
         embeds: [emb],
       });
     } else {
+    if (!channel.permissionsFor(interaction.client.user)?.has(["ViewChannel", "SendMessages"])) { 
+    const emb2Full = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+      des: `⚠️ لا يمكنني رؤية هذه القناة أو الكتابة بها. تأكد من إعطائي الأذونات الصحيحة.`,
+      line: false,
+      footer: 'Error.',
+      fields: "Error."
+      },
+      "Error"
+    );
+    if(emb2Full) {
+    return await interaction.editReply({ embeds: [emb2Full] });
+}
+    }
+
       new schema_1({
         guildId: interaction.guild.id,
         channelId: [],

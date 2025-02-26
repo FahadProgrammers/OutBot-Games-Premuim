@@ -12,12 +12,13 @@ import Category from "../../base/enums/Category";
 import word from "../../utils/games/youtubers";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
-import warningembed_1 from "../../utils/embeds/warnembed";
 import path from "path";
 import emoji from "../../utils/functions/emojis";
 import profile from "../../utils/functions/Profile";
 import pschema from "../../schema/SchemaPrefix";
 import Collecter from "../../utils/functions/MessageCollecter";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
+import canvas, { loadImage } from "canvas";
 
 export default class جمع extends Command {
   constructor(client: CustomClient) {
@@ -31,26 +32,40 @@ export default class جمع extends Command {
   }
 
   async execute(message: Message) {
-    if (message.guild?.id === "711370689126596618")
-      // Drb7h ServerId
-      return;
     const randomKey =
       Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
     const randomValue = word[randomKey];
 
-    const ff = path.resolve("src/addition/assets/Youtubers", randomValue);
+    const ff = path.resolve("src/utils/Youtubers", randomValue);
     const attach = new AttachmentBuilder(ff, { name: `image.png` });
 
+
+    if (!message.guild) return;
+      const base = await BaseEmbed(
+        this.client,
+        message.guild,
+        {
+          line: false,
+          title: "خمن **لون اليوتيوبر**",
+          footer: "تخمين اليوتيوبر",
+          fields: "تخمين اليوتيوبر",
+        },
+        "Base"
+      );
+      if (base) {
+       base.setImage('attachment://image.png')
     const messageFetch = await message.reply({
+      embeds: [base],
       files: [attach],
     });
 
     const time_1 = new Date().getTime();
     let status = false;
     try {
-      await Collecter(messageFetch, randomValue, time_1);
+      await Collecter(this.client, messageFetch, randomKey, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }
   }
+}
 }

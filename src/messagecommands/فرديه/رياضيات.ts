@@ -8,12 +8,10 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import word from "../../utils/games/youtubers";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
-import warningembed_1 from "../../utils/embeds/warnembed";
-import mainembedNodetils from "../../utils/embeds/mainembedNodetils";
+
 import path from "path";
 import emoji from "../../utils/functions/emojis";
 import numbersandkey from "../../utils/functions/randomNum";
@@ -100,7 +98,7 @@ export default class رياضيات extends Command {
     const time_1 = Date.now();
     let status = false;
     try {
-      await Collecter(messageFetch, answer.toString(), time_1);
+      await Collecter(this.client, messageFetch, answer.toString(), time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

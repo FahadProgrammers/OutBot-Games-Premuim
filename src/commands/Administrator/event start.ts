@@ -11,7 +11,7 @@ import {
 import Command from "../../base/classes/Command";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class event extends Command {
   constructor(client: CustomClient) {
@@ -93,7 +93,18 @@ export default class event extends Command {
         });
       }
 
-      const embed = await mainembed("يرجى الاختيار ماتريد من الالعاب أدناه");
+      const embed = await BaseEmbed(
+        this.client,
+        interaction.guild,
+        {
+          title: "يرجى الاختيار ماتريد من الالعاب أدناه",
+          footer: "اختر اللعبة التي ترغب بها",
+          fields: "اختر اللعبة التي ترغب بها",
+          line: true,
+        },
+        "Base"
+      );      
+      if(embed) {
       embed.addFields({
         name: `تم إضافة:`,
         value: `لايوجد`,
@@ -103,7 +114,8 @@ export default class event extends Command {
         embeds: [embed],
         components: rows,
       });
-    } catch (error) {
+    } 
+  } catch (error) {
       console.error(
         "An unexpected error occurred : of command /push alert",
         error

@@ -101,7 +101,7 @@ class اسرع extends MessageCreate_1.default {
             const time_1 = Date.now();
             let status = false;
             try {
-                yield (0, MessageCollecter_1.default)(messageFetch, applied.text.toLowerCase(), time_1);
+                yield (0, MessageCollecter_1.default)(this.client, messageFetch, applied.text.toLowerCase(), time_1);
             }
             catch (err) {
                 console.log("Error of Collecter!!");

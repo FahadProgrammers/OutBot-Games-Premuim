@@ -11,7 +11,6 @@ import { Hercai } from "hercai";
 import Category from "../../base/enums/Category";
 import randomwordSuccess from "../../utils/games/success";
 import randomwords from "../../utils/games/words.json";
-import warningembed_1 from "../../utils/embeds/warnembed";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
 import emoji from "../../utils/functions/emojis";
@@ -19,6 +18,8 @@ import canvas, { loadImage } from "canvas";
 import path from "path";
 import pschema from "../../schema/SchemaPrefix";
 import Collecter from "../../utils/functions/MessageCollecter";
+import SchemaTheme from "../../schema/SchemaTheme";
+
 
 export default class اسرع extends Command {
   constructor(client: CustomClient) {
@@ -39,8 +40,22 @@ export default class اسرع extends Command {
       wordsss[Math.floor(Math.random() * randomwords.words.length)];
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
-    const filePath = path.resolve("src/utils/assets", "BOTBG.png");
+    const f = await SchemaTheme.findOne({
+      guildId: message.guild?.id
+    });
+    let filePath = path.resolve("src/utils/assets", "BOTBG.png");
 
+    if(f) {
+      switch(f.theme) {
+        case "1":
+          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png")
+        break;
+        case "2":
+          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png")
+        break;
+      }
+    }
+   
     await loadImage(filePath)
       .then(async (image) => {
         canvas.registerFont(
@@ -73,14 +88,15 @@ export default class اسرع extends Command {
         console.log(err);
       });
     const messageFetch = await message.reply({
-      files: [Canvas.toBuffer()],
+      files: [Canvas.toBuffer()
+      ],
     });
 
     const time_1 = Date.now();
     let status = false;
 
     try {
-      await Collecter(messageFetch, randomword_2_2, time_1);
+      await Collecter(this.client, messageFetch, randomword_2_2, time_1);
     } catch (err) {
       console.log("Error of Collecter!!");
     }

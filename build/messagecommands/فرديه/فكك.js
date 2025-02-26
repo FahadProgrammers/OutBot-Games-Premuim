@@ -47,7 +47,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const splitwords_1 = __importDefault(require("../../utils/games/splitwords"));
+const splitwords_json_1 = __importDefault(require("../../utils/games/splitwords.json"));
 const path_1 = __importDefault(require("path"));
 const canvas_1 = __importStar(require("canvas"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
@@ -63,8 +63,9 @@ class فكك extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const randomKey = Object.keys(splitwords_1.default)[Math.floor(Math.random() * Object.keys(splitwords_1.default).length)];
-            const randomValue = splitwords_1.default[randomKey];
+            const randomKey = Object.keys(splitwords_json_1.default.words)[Math.floor(Math.random() * Object.keys(splitwords_json_1.default.words).length)];
+            const ran = splitwords_json_1.default.words;
+            const randomValue = ran[randomKey];
             const Canvas = canvas_1.default.createCanvas(700, 250);
             const ctx = Canvas.getContext("2d");
             const filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
@@ -96,7 +97,7 @@ class فكك extends MessageCreate_1.default {
             const time_1 = Date.now();
             let status = false;
             try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomValue, time_1);
+                yield (0, MessageCollecter_1.default)(this.client, messageFetch, randomValue, time_1);
             }
             catch (err) {
                 console.log("Error of Collecter!!");

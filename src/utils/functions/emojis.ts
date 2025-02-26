@@ -20,17 +20,17 @@ const emoji: emoji = {
     shop: "<:puzzle:1343029545544061042>",
     time: "<:waste:1343052121171562618>"
   },
-  true: "<:success_2:1342162798464991324>",
-  trueURL: "https://cdn.discordapp.com/emojis/1342162798464991324.png?quality=lossless",
-  false: "<:close:1342162786901299261>",
-  falseURL: "https://cdn.discordapp.com/emojis/1342162786901299261.png?quality=lossless",
-  BaseURL: "https://cdn.discordapp.com/emojis/1303325780704759868.png?quality=lossless", //Logo
+  true: "<:highquality:1343673377621278760>",
+  trueURL: "https://cdn.discordapp.com/emojis/1343673377621278760.png?quality=lossless",
+  false: "<:IMG_27191:1343973356474601472>",
+  falseURL: "https://cdn.discordapp.com/emojis/1343973356474601472.png?quality=lossless",
+  BaseURL: "https://cdn.discordapp.com/emojis/1343675920837513276.png?quality=lossless", //Logo
   esar_arrow: "<:1323739617790263326:1341704260483551323>",
   emen_arrow: "<:file:1341703206127931498>",
   all: "<:all_2:1341693257062813746>",
   open: "<:openbracket:1343040121376739389>",
   close: "<:brackets:1343040104511569920>",
-  outbotgames: "<:Picsart_241028_170653120:1303325780704759868>"
+  outbotgames: "<:IMG_1454__1_removebgpreview:1343675920837513276>"
 };
 
 export default emoji;

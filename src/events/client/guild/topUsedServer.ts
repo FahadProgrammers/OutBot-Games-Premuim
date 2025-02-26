@@ -4,7 +4,6 @@ import {
 } from "discord.js";
 import CustomClient from "../../../base/classes/CustomClient";
 import Event from "../../../base/classes/Events";
-import mainembed from "../../../utils/embeds/mainEmbed";
 import schema from "../../../schema/SchemaServerUsedStats";
 import rank from "../../../utils/functions/rank";
 import BaseEmbed from "../../../utils/embeds/BaseEmbed";
@@ -45,7 +44,8 @@ schemaFindAll
         
         if(!interaction.guild) return;
               
-        const emb = BaseEmbed(
+        const emb = await BaseEmbed(
+          this.client,
         interaction.guild,
         {
         des: (await top10PointsAll).join("\n"),

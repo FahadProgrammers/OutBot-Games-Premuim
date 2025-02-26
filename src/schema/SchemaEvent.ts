@@ -14,4 +14,4 @@ const schema2 = new Schema<SchemaType>({
     command: { type: String, required: true }
 });
 
-export default model<SchemaType>("RoleEvent-Tester", schema2);
+export default model<SchemaType>("RoleEvent-prem", schema2);

@@ -17,7 +17,7 @@ const SchemaUsers_1 = __importDefault(require("../../schema/SchemaUsers"));
 const discord_arts_1 = require("discord-arts");
 const rank_1 = __importDefault(require("./rank"));
 const axios_1 = __importDefault(require("axios"));
-function profile(message) {
+function profile(message, mention) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         if (!message.guild) {
@@ -25,7 +25,7 @@ function profile(message) {
                 content: "?",
             });
         }
-        const user = message.author;
+        const user = mention || message.author;
         const schema_2 = yield SchemaUsers_1.default.findOne({
             guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id,
             userId: user === null || user === void 0 ? void 0 : user.id,

@@ -6,8 +6,8 @@ import Command from "../../base/classes/Command";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import schema_1 from "../../schema/SchemaChannel";
-import mainembed from "../../utils/embeds/mainEmbed";
 import emoji from "../../utils/functions/emojis";
+import BaseEmbed from "../../utils/embeds/BaseEmbed";
 
 export default class ajr extends Command {
   constructor(client: CustomClient) {
@@ -30,19 +30,30 @@ export default class ajr extends Command {
       });
     }
 
+    const embed = await BaseEmbed(
+      this.client,
+      interaction.guild,
+      {
+        line: false,
+        title: `صدقة جاريه`,
+        footer: "System",
+        fields: `
+          الله يرحمه ويغفر له ويغفر له ويسكنه فسيح جناته
+    
+          [تبرع الآن](https://ehsan.sa/campaign/1E29E00C61)
+    
+          عن أبي هُريرة رضي الله عنه : أَنَّ رسولَ اللَّه ﷺ قَالَ: مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ، وَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا، وَمَا تَوَاضَعَ أَحَدٌ للَّهِ إِلَّا رَفَعَهُ اللّهُ عز وجل
+        `,
+      },
+      "Base"
+    );
+    if(embed) {    
+
     await interaction.editReply({
       embeds: [
-        await mainembed(
-          `
-      صدقة جاريه
-الله يرحمه ويغفر له ويغفر له ويسكنه فسيح جناته
-
-https://ehsan.sa/campaign/1E29E00C61
-عن أبي هُريرة رضي الله عنه : أَنَّ رسولَ اللَّه ﷺ قَالَ: مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ، وَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا، وَمَا تَوَاضَعَ أَحَدٌ للَّهِ إِلَّا رَفَعَهُ اللّهُ عز وجل`,
-          "System",
-          "System"
-        ),
+        embed
       ],
     });
   }
+}
 }

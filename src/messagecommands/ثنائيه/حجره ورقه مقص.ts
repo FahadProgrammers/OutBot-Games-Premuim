@@ -5,6 +5,7 @@ import {
   APIButtonComponent,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  Base,
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
@@ -21,16 +22,12 @@ import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
-import mainembed from "../../utils/embeds/mainEmbed";
 import randomwordSuccess from "../../utils/games/success";
-import warningembed_1 from "../../utils/embeds/warnembed";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
-import mainembedNodetils from "../../utils/embeds/mainembedNodetils";
-import mainembedNodetils2 from "../../utils/embeds/mainembedNodetils2";
 import channel from "../../schema/SchemaChannel";
 import emoji from "../../utils/functions/emojis";
-import warnembed from "../../utils/embeds/warnembed";
+import { formToJSON } from "axios";
 const RPS = require("discord-rock-paper-scissor");
 const rps = new RPS();
 export default class اكس extends Command {
@@ -74,24 +71,60 @@ export default class اكس extends Command {
     ];
 
     if (!member) {
-      const embed = warnembed(
-        `${emoji.false} | تأكد من منشن عضو او كتابه كلمه بوت!`
-      );
+      if(!message.guild) return;
+      const embed = await BaseEmbed(
+        this.client,
+        message.guild,
+        {
+          title: "مهلا",
+        des: `${emoji.false} | تأكد من منشن عضو او كتابه كلمه بوت!`,
+        line: false,
+        footer: "Error.",
+        fields: "Error"
+    },
+    'Error'
+  );
+  if(embed) {
       await message.reply({
         embeds: [embed],
       });
 
       return;
     }
-    if (message.author.id === member?.id) {
-      const embed = warnembed(`${emoji.false} | تأكد من عدم منشن نفسك او بوت!`);
+  }
+    if (message.author.id === member?.id && message.guild) {
+      const embedCh = await BaseEmbed(
+        this.client,
+        message.guild,
+        {
+        title: "مهلا",
+        des: `${emoji.false} | تأكد من عدم منشن نفسك او بوت!`,
+        line: false,
+        footer: "Error.",
+        fields: "Error"
+    },
+    'Error'
+  );
+  if(embedCh) {
       await message.reply({
-        embeds: [embed],
+        embeds: [embedCh],
       });
       return;
     }
-    const embed = mainembed(
-      `<@${member?.id}> | هل تريد العب ضد <@${message.author?.id}>`
+  }
+    if(!message.guild) return;
+
+    const embed = await BaseEmbed(
+      this.client,
+      message.guild,
+      {
+        title: "قبول اللعبه",
+        des: `<@${member?.id}> | هل تريد العب ضد <@${message.author?.id}>` ,
+        line: false,
+        footer: "حجره",
+        fields: "حجره",
+      },
+      "Base"
     );
 
     const rowSend = new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -107,6 +140,7 @@ export default class اكس extends Command {
 
     if (!member?.bot) {
       if (message.channel instanceof TextChannel) {
+        if(embed) {
         const sendInteraction = await message.channel.send({
           embeds: [embed],
           components: [rowSend],
@@ -130,7 +164,8 @@ export default class اكس extends Command {
           MessagetargetUserInteraction.customId === `true-${message.author.id}`
         ) {
           if (message.guild) {
-            const embeddone = BaseEmbed(
+            const embeddone = await BaseEmbed(
+              this.client,
               message.guild,
               {
                 title: "تم قبول اللعبه",
@@ -146,13 +181,25 @@ export default class اكس extends Command {
                 embeds: [embeddone],
                 components: [],
               });
-              startGame();
+              startGame(this.client);
             }
           }
         } else if (
           MessagetargetUserInteraction.customId === `false-${message.author.id}`
         ) {
-          const embedwarn = warnembed(`${emoji.false} | تم رفض قبول اللعبه`);
+          const embedwarn = await BaseEmbed(
+            this.client,
+            message.guild,
+            {
+              title: "مهلا",
+            des: `${emoji.false} | تم رفض قبول اللعبه`,
+            line: false,
+            footer: "Error.",
+            fields: "Error"
+        },
+        'Error'
+      );
+      if(embedwarn) {
           await sendInteraction.edit({
             embeds: [embedwarn],
             components: [],
@@ -160,12 +207,24 @@ export default class اكس extends Command {
           return;
         }
       }
-    } else {
-      startGame();
     }
-    async function startGame() {
-      const emb = mainembed(`حان دور <@${member?.id}> ل العب!`);
-
+    } else {
+      startGame(this.client);
+    }
+    async function startGame(client: CustomClient) {
+      if(!message.guild) return;
+      const emb = await BaseEmbed(
+        client,
+        message.guild,
+        {
+          line: false,
+          title: "حان دور اللعب!",
+          footer: `دور <@${member?.id}> للعب!`,
+          fields: `حان دور <@${member?.id}> ل اللعب!`,
+        },
+        "Base"
+      );
+if(emb) {     
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         choices.map((choice) => {
           return new ButtonBuilder()
@@ -353,6 +412,7 @@ export default class اكس extends Command {
         }
       }
     }
+  }
 
     //       let mid: string;
     //       const args = message.content.split(" ").slice(1);
@@ -474,4 +534,4 @@ export default class اكس extends Command {
     //     }
   }
 }
-// }
+}

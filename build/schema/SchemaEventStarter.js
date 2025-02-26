@@ -6,4 +6,4 @@ const schema2 = new mongoose_1.Schema({
     channel: { type: String, required: false },
     commands: { type: Array, required: true }
 });
-exports.default = (0, mongoose_1.model)("Event-Tester", schema2);
+exports.default = (0, mongoose_1.model)("Event-prem", schema2);

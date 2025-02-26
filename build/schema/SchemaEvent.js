@@ -7,4 +7,4 @@ const schema2 = new mongoose_1.Schema({
     roleId: { type: String, required: true },
     command: { type: String, required: true }
 });
-exports.default = (0, mongoose_1.model)("RoleEvent-Tester", schema2);
+exports.default = (0, mongoose_1.model)("RoleEvent-prem", schema2);

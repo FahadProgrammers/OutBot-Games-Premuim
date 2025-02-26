@@ -33,7 +33,8 @@ export default class help extends Command {
       });
     }
 
-    const Embed = BaseEmbed(
+    const Embed = await BaseEmbed(
+      this.client,
       interaction.guild,
       {
         title: "قائمة الاوامر", 

@@ -11,11 +11,10 @@ import {
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import word from "../../utils/games/color";
+import word from "../../utils/games/color.json";
 import rank from "../../utils/functions/rank";
 import schema from "../../schema/SchemaUsers";
 import { createCanvas } from "canvas";
-import warningembed_1 from "../../utils/embeds/warnembed";
 import emoji from "../../utils/functions/emojis";
 import pschema from "../../schema/SchemaPrefix";
 import Collecter from "../../utils/functions/MessageCollecter";
@@ -36,16 +35,16 @@ export default class لون extends Command {
     try {
       const args = message.content.split(" ").slice(1);
       const randomKey =
-        Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
-      let randomValue = word[randomKey];
+        Object.keys(word.words)[Math.floor(Math.random() * Object.keys(word.words).length)];
+      let randomValue = word.words[randomKey as keyof typeof word.words];
       const randomKey2 =
-        Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
-      let randomValue2 = word[randomKey2];
+        Object.keys(word.words)[Math.floor(Math.random() * Object.keys(word.words).length)];
+      let randomValue2 = word.words[randomKey as keyof typeof word.words];
       while (randomValue === randomValue2) {
-        randomValue2 = word[randomKey2];
+        randomValue2 = word.words[randomKey as keyof typeof word.words];
       }
       const randomKey3 =
-        Object.keys(word)[Math.floor(Math.random() * Object.keys(word).length)];
+        Object.keys(word)[Math.floor(Math.random() * Object.keys(word.words).length)];
 
       const canvas = createCanvas(114, 148);
       const ctx = canvas.getContext("2d");
@@ -61,7 +60,8 @@ export default class لون extends Command {
         name: "image.png",
       });
       if (!message.guild) return;
-      const base = BaseEmbed(
+      const base = await BaseEmbed(
+        this.client,
         message.guild,
         {
           line: false,
@@ -82,7 +82,7 @@ export default class لون extends Command {
         const time_1 = new Date().getTime();
         let status = false;
         try {
-          await Collecter(messageFetch, randomKey2, time_1);
+          await Collecter(this.client, messageFetch, randomKey2, time_1);
         } catch (err) {
           console.log("Error of Collecter!!");
         }

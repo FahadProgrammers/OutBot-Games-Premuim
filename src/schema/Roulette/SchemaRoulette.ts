@@ -79,4 +79,4 @@ const schema2 = new Schema<schema>({
   msgId: String,
 });
 
-export default model<schema>("schemaGameTester00", schema2);
+export default model<schema>("roulette-prem", schema2);

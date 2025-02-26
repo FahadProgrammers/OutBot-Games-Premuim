@@ -10,7 +10,6 @@ import {
   import CustomClient from "../../base/classes/CustomClient";
   import Category from "../../base/enums/Category";
   import schema_1 from "../../schema/SchemaChannel";
-  import mainembed from "../../utils/embeds/mainEmbed";
   import emoji from "../../utils/functions/emojis";
 import BaseEmbed from "../../utils/embeds/BaseEmbed";
 import utils from "../../utils/utils";
@@ -39,7 +38,8 @@ import utils from "../../utils/utils";
           content: `${emoji.false} | ?`,
         });
       }
-const Embd =  BaseEmbed(
+const Embd = await BaseEmbed(
+  this.client,
     interaction.guild,
     {
       title: "Support Server",

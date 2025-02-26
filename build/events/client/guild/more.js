@@ -41,7 +41,7 @@ class CommandHandler extends Events_1.default {
                 if (!interaction.guild) {
                     return console.log("خطا في interaction.guild");
                 }
-                const emb = (0, BaseEmbed_1.default)(interaction.guild, {
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                     title: `${(prefixFind === null || prefixFind === void 0 ? void 0 : prefixFind.prefix.length) === 1 ? "بادئة" : "بادئات"} **البوت**`,
                     des: `
           <:blogging:1343040598919090236> **البريفكس** المخصصه لديك في هاذي القناه **هيَ**:

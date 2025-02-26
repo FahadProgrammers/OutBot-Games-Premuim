@@ -13,4 +13,4 @@ const schema2 = new Schema<SchemaType>({
     commands: { type: Map, of: Number, default: {} }
 });
 
-export default model<SchemaType>("ServerUsedStats", schema2);
+export default model<SchemaType>("ServerUsedStats-prem", schema2);

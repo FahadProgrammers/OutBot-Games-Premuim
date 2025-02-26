@@ -54,7 +54,7 @@ class CommandHandler extends Events_1.default {
                 })));
                 if (!interaction.guild)
                     return;
-                const emb = (0, BaseEmbed_1.default)(interaction.guild, {
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
                     des: (yield top10PointsAll).join("\n"),
                     line: true,
                     footer: "التوب",

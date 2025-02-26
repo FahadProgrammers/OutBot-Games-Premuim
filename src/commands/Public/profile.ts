@@ -8,7 +8,6 @@ import { profileImage } from "discord-arts";
 import Command from "../../base/classes/Command";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
-import mainembed from "../../utils/embeds/mainEmbed";
 import emoji from "../../utils/functions/emojis";
 import rank from "../../utils/functions/rank";
 import axios from "axios";

@@ -16,9 +16,7 @@ const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../../base/classes/Command"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
 const SchemaUsers_1 = __importDefault(require("../../schema/SchemaUsers"));
-const mainEmbed_1 = __importDefault(require("../../utils/embeds/mainEmbed"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
-const warnembed_1 = __importDefault(require("../../utils/embeds/warnembed"));
 const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
 class help extends Command_1.default {
     constructor(client) {
@@ -50,13 +48,23 @@ class help extends Command_1.default {
             const member = options.getUser("member");
             if (member) {
                 const membermention = `<@${member.id}>`;
-                const emb = (0, mainEmbed_1.default)(`هل انت متأكد من حذف بيانات المستخدم؟ ${membermention}`);
-                const embErrorNoData = (0, mainEmbed_1.default)(`المستخدم لا يملك بيانات! :x: ${membermention}`);
-                const find = (yield SchemaUsers_1.default.findOne({
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "هل انت متأكد من حذف بيانات المستخدم؟",
+                    fields: membermention,
+                    footer: "تأكيد الحذف",
+                    line: true,
+                }, "Base");
+                const embErrorNoData = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "المستخدم لا يملك بيانات! :x:",
+                    fields: membermention,
+                    footer: "خطأ",
+                    line: true,
+                }, "Error");
+                const find = yield SchemaUsers_1.default.findOne({
                     guildId: interaction.guild.id,
                     userId: member.id,
-                })) || null;
-                if (!find) {
+                });
+                if (!find && embErrorNoData) {
                     yield interaction.editReply({
                         embeds: [embErrorNoData],
                     });
@@ -71,54 +79,68 @@ class help extends Command_1.default {
                     .setCustomId(`no_${interaction.user.id}`)
                     .setStyle(discord_js_1.ButtonStyle.Danger);
                 const btnrow = new discord_js_1.ActionRowBuilder().addComponents(btn1, btn2);
-                const mm = yield interaction.editReply({
-                    embeds: [emb],
-                    components: [btnrow],
-                });
-                const coll = yield mm.createMessageComponentCollector({
-                    time: 10000,
-                    filter: (m) => !m.user.bot,
-                    componentType: discord_js_1.ComponentType.Button,
-                });
-                coll.on("collect", (m) => __awaiter(this, void 0, void 0, function* () {
-                    var _a;
-                    if (interaction.guild) {
-                        const emb = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "resetpoints",
-                            des: `${emojis_1.default.true} | تم بنجاح تنفيذ الأمر`,
+                if (emb) {
+                    const mm = yield interaction.editReply({
+                        embeds: [emb],
+                        components: [btnrow],
+                    });
+                    const coll = yield mm.createMessageComponentCollector({
+                        time: 10000,
+                        filter: (m) => !m.user.bot,
+                        componentType: discord_js_1.ComponentType.Button,
+                    });
+                    coll.on("collect", (m) => __awaiter(this, void 0, void 0, function* () {
+                        var _a;
+                        if (!interaction.guild)
+                            return;
+                        const embSuccess = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "تم بنجاح تنفيذ الأمر",
+                            fields: "تم حذف البيانات بنجاح.",
+                            footer: "إعادة تعيين البيانات",
                             line: true,
-                            footer: `اعادة تعيين`,
-                            fields: `اعادة تعيين`,
                         }, "Success");
-                        if (emb) {
-                            const embNo = (0, warnembed_1.default)(`${emojis_1.default.true} | تم بنجاح إلغاء تنفيذ الأمر`);
-                            if (m.customId === `yes_${m.user.id}`) {
-                                yield SchemaUsers_1.default.deleteOne({
-                                    guildId: (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id,
-                                    userId: member.id,
-                                });
+                        const embNo = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "تم بنجاح إلغاء تنفيذ الأمر",
+                            fields: "تم إلغاء الحذف.",
+                            footer: "إلغاء الإجراء",
+                            line: true,
+                        }, "Cancel");
+                        if (m.customId === `yes_${m.user.id}`) {
+                            yield SchemaUsers_1.default.deleteOne({
+                                guildId: (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id,
+                                userId: member.id,
+                            });
+                            if (embSuccess)
                                 yield m.update({
-                                    embeds: [emb],
+                                    embeds: [embSuccess],
                                     components: [],
                                 });
-                            }
-                            else if (m.customId === `no_${m.user.id}`) {
+                        }
+                        else if (m.customId === `no_${m.user.id}`) {
+                            if (embNo)
                                 yield m.update({
                                     embeds: [embNo],
                                     components: [],
                                 });
-                            }
                         }
-                    }
-                }));
+                    }));
+                }
             }
             else {
-                const emb = (0, mainEmbed_1.default)(`هل انت متأكد من حذف بيانات المستخدمين؟`);
-                const embErrorNoData = (0, warnembed_1.default)(`السيرفر لا يملك بيانات! :x:`);
+                const emb = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "هل انت متأكد من حذف بيانات المستخدمين؟",
+                    footer: "تأكيد الحذف لجميع المستخدمين",
+                    line: true,
+                }, "Base");
+                const embErrorNoData = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                    title: "السيرفر لا يملك بيانات! :x:",
+                    footer: "خطأ",
+                    line: true,
+                }, "Error");
                 const find = yield SchemaUsers_1.default.findOne({
                     guildId: interaction.guild.id,
                 });
-                if (!find) {
+                if (!find && embErrorNoData) {
                     yield interaction.editReply({
                         embeds: [embErrorNoData],
                     });
@@ -133,45 +155,53 @@ class help extends Command_1.default {
                     .setCustomId(`no_${interaction.guild.id}`)
                     .setStyle(discord_js_1.ButtonStyle.Danger);
                 const btnrow = new discord_js_1.ActionRowBuilder().addComponents(btn1, btn2);
-                const mm = yield interaction.editReply({
-                    embeds: [emb],
-                    components: [btnrow],
-                });
-                const coll = yield mm.createMessageComponentCollector({
-                    time: 10000,
-                    filter: (m) => !m.user.bot,
-                    componentType: discord_js_1.ComponentType.Button,
-                });
-                coll.on("collect", (m) => __awaiter(this, void 0, void 0, function* () {
-                    var _a, _b, _c;
-                    if (interaction.guild) {
-                        const emb = (0, BaseEmbed_1.default)(interaction.guild, {
-                            title: "resetpoints",
-                            des: `${emojis_1.default.true} | تم بنجاح تنفيذ الأمر`,
+                if (emb) {
+                    const mm = yield interaction.editReply({
+                        embeds: [emb],
+                        components: [btnrow],
+                    });
+                    const coll = yield mm.createMessageComponentCollector({
+                        time: 10000,
+                        filter: (m) => !m.user.bot,
+                        componentType: discord_js_1.ComponentType.Button,
+                    });
+                    coll.on("collect", (m) => __awaiter(this, void 0, void 0, function* () {
+                        var _a, _b, _c;
+                        if (!interaction.guild)
+                            return;
+                        const embSuccess = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "تم بنجاح تنفيذ الأمر",
+                            fields: "تم حذف بيانات جميع المستخدمين بنجاح.",
+                            footer: "إعادة تعيين البيانات",
                             line: true,
-                            footer: `اعادة تعيين`,
-                            fields: `اعادة تعيين`,
                         }, "Success");
-                        if (emb) {
-                            const embNo = (0, warnembed_1.default)(`${emojis_1.default.true} | تم بنجاح إلغاء تنفيذ الأمر`);
-                            if (m.customId === `yes_${(_a = m.guild) === null || _a === void 0 ? void 0 : _a.id}`) {
-                                yield SchemaUsers_1.default.deleteMany({
-                                    guildId: (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id,
-                                });
+                        if (!interaction.guild)
+                            return;
+                        const embNo = yield (0, BaseEmbed_1.default)(this.client, interaction.guild, {
+                            title: "تم بنجاح إلغاء تنفيذ الأمر",
+                            fields: "تم إلغاء الحذف لجميع المستخدمين.",
+                            footer: "إلغاء الإجراء",
+                            line: true,
+                        }, "Cancel");
+                        if (m.customId === `yes_${(_a = m.guild) === null || _a === void 0 ? void 0 : _a.id}`) {
+                            yield SchemaUsers_1.default.deleteMany({
+                                guildId: (_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id,
+                            });
+                            if (embSuccess)
                                 yield m.update({
-                                    embeds: [emb],
+                                    embeds: [embSuccess],
                                     components: [],
                                 });
-                            }
-                            else if (m.customId === `no_${(_c = m.guild) === null || _c === void 0 ? void 0 : _c.id}`) {
+                        }
+                        else if (m.customId === `no_${(_c = m.guild) === null || _c === void 0 ? void 0 : _c.id}`) {
+                            if (embNo)
                                 yield m.update({
                                     embeds: [embNo],
                                     components: [],
                                 });
-                            }
                         }
-                    }
-                }));
+                    }));
+                }
             }
         });
     }

@@ -18,6 +18,7 @@ const Category_1 = __importDefault(require("../../base/enums/Category"));
 const youtubers_1 = __importDefault(require("../../utils/games/youtubers"));
 const path_1 = __importDefault(require("path"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
+const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
 class جمع extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -30,24 +31,32 @@ class جمع extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            if (((_a = message.guild) === null || _a === void 0 ? void 0 : _a.id) === "711370689126596618")
-                // Drb7h ServerId
-                return;
             const randomKey = Object.keys(youtubers_1.default)[Math.floor(Math.random() * Object.keys(youtubers_1.default).length)];
             const randomValue = youtubers_1.default[randomKey];
-            const ff = path_1.default.resolve("src/addition/assets/Youtubers", randomValue);
+            const ff = path_1.default.resolve("src/utils/Youtubers", randomValue);
             const attach = new discord_js_1.AttachmentBuilder(ff, { name: `image.png` });
-            const messageFetch = yield message.reply({
-                files: [attach],
-            });
-            const time_1 = new Date().getTime();
-            let status = false;
-            try {
-                yield (0, MessageCollecter_1.default)(messageFetch, randomValue, time_1);
-            }
-            catch (err) {
-                console.log("Error of Collecter!!");
+            if (!message.guild)
+                return;
+            const base = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
+                line: false,
+                title: "خمن **لون اليوتيوبر**",
+                footer: "تخمين اليوتيوبر",
+                fields: "تخمين اليوتيوبر",
+            }, "Base");
+            if (base) {
+                base.setImage('attachment://image.png');
+                const messageFetch = yield message.reply({
+                    embeds: [base],
+                    files: [attach],
+                });
+                const time_1 = new Date().getTime();
+                let status = false;
+                try {
+                    yield (0, MessageCollecter_1.default)(this.client, messageFetch, randomKey, time_1);
+                }
+                catch (err) {
+                    console.log("Error of Collecter!!");
+                }
             }
         });
     }

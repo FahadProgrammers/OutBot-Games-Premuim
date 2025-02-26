@@ -4,9 +4,9 @@ import {
 } from "discord.js";
 import CustomClient from "../../../base/classes/CustomClient";
 import Event from "../../../base/classes/Events";
-import mainembed from "../../../utils/embeds/mainEmbed";
 import schema from "../../../schema/SchemaUsers";
 import rank from "../../../utils/functions/rank";
+import BaseEmbed from "../../../utils/embeds/BaseEmbed";
 
 export default class CommandHandler extends Event {
   constructor(client: CustomClient) {
@@ -42,10 +42,24 @@ export default class CommandHandler extends Event {
         })
         .slice(0, 10)
         .join("\n");
-      const emb = mainembed(top10Local, "System", "System");
+        if(!interaction.guild) return;
+        const emb = await BaseEmbed(
+          this.client,
+          interaction.guild,
+          {
+            line: false,
+            title: top10Local,
+            footer: "System",
+            fields: "System",
+          },
+          "Base"
+        );
+
+        if(emb) {
       await interaction.editReply({
         embeds: [emb],
       });
     }
+  }
   }
 }

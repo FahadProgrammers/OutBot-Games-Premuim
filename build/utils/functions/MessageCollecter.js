@@ -18,14 +18,21 @@ const emojis_1 = __importDefault(require("./emojis"));
 const rank_1 = __importDefault(require("./rank"));
 const SchemaUsers_1 = __importDefault(require("../../schema/SchemaUsers"));
 const SchemaPrefix_1 = __importDefault(require("../../schema/SchemaPrefix"));
-function Collecter(message, randomKey, time_1) {
+const success_1 = __importDefault(require("../games/success"));
+const SchemaChannel_1 = __importDefault(require("../../schema/SchemaChannel"));
+function Collecter(client, message, randomKey, time_1) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             if (message.channel instanceof discord_js_1.TextChannel) {
+                const find = yield SchemaChannel_1.default.findOne({
+                    guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id,
+                    channelId: message.channel.id
+                });
                 const filter = (m) => { var _a; return m.author.id !== ((_a = message.client.user) === null || _a === void 0 ? void 0 : _a.id); };
                 const collector = message.channel.createMessageCollector({
                     filter,
-                    time: 5000,
+                    time: (find === null || find === void 0 ? void 0 : find.time) ? find.time * 1000 : 5000,
                 });
                 collector.on("collect", (m) => __awaiter(this, void 0, void 0, function* () {
                     var _a, _b, _c, _d, _e, _f;
@@ -66,24 +73,25 @@ function Collecter(message, randomKey, time_1) {
                                 .setCustomId("disabled_ranl")
                                 .setDisabled(true)
                                 .setStyle(discord_js_1.ButtonStyle.Secondary)
-                                .setLabel(`${rank_2.name} - ${(_d = schema_3.p) !== null && _d !== void 0 ? _d : 1}`), new discord_js_1.ButtonBuilder()
+                                .setLabel(`${rank_2.name} [ ${(_d = schema_3.p) !== null && _d !== void 0 ? _d : 1} ]`), new discord_js_1.ButtonBuilder()
                                 .setEmoji("<:time:1343029577701654568>")
                                 .setLabel(content)
                                 .setCustomId("dis")
                                 .setDisabled(true)
                                 .setStyle(discord_js_1.ButtonStyle.Secondary), new discord_js_1.ButtonBuilder()
                                 .setLabel("نظام النقاط")
-                                .setStyle(discord_js_1.ButtonStyle.Primary)
+                                .setStyle(discord_js_1.ButtonStyle.Secondary)
                                 .setCustomId("rank_info")
-                                .setEmoji("<:waste:1343052121171562618>"));
+                                .setEmoji("<:badge:1343344820395184251>"));
                             const prefixx = (yield SchemaPrefix_1.default.findOne({
                                 guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id,
                                 channelId: message.channel.id,
                             })) || { prefix: "+" };
                             if (message.guild) {
-                                const greensuccess = (0, BaseEmbed_1.default)(message.guild, {
+                                const ran = success_1.default[Math.floor(Math.random() * success_1.default.length)];
+                                const greensuccess = yield (0, BaseEmbed_1.default)(client, message.guild, {
                                     title: "إجابه صحيحه",
-                                    des: `> ${emojis_1.default.true} فنان، إجابه **صحيحه** ( \`**${randomKey}**\` )
+                                    des: `> ${emojis_1.default.true} ${ran}, إجابه **صحيحه** ( \`**${randomKey}**\` )
 
 -# ${emojis_1.default.emen_arrow} ل رؤية البروفايل الخاص بك بشكل أسرع استخدم 
 -# /profile | ${prefixx.prefix}بروفايل
@@ -106,7 +114,7 @@ function Collecter(message, randomKey, time_1) {
                         // ❌ **إجابة خاطئة - يتم إيقاف الجامع فورًا وإرسال الرد**
                         collector.stop();
                         if (message.guild) {
-                            const wrongAnswerEmbed = (0, BaseEmbed_1.default)(message.guild, {
+                            const wrongAnswerEmbed = yield (0, BaseEmbed_1.default)(client, message.guild, {
                                 title: "إجابه خاطئه!",
                                 des: `> ${emojis_1.default.false} | للأسف، **إجابه خاطئه**.\n ( \`**${randomKey}**\``,
                                 line: false,
@@ -126,7 +134,7 @@ function Collecter(message, randomKey, time_1) {
                     if (reason === "time") {
                         // ⏳ **انتهى الوقت ولم يجب أحد إجابة صحيحة**
                         if (message.guild) {
-                            const timeUpEmbed = (0, BaseEmbed_1.default)(message.guild, {
+                            const timeUpEmbed = yield (0, BaseEmbed_1.default)(client, message.guild, {
                                 title: "انتهى الوقت!",
                                 des: `> ⏳ | للأسف، لقد **انتهى الوقت**.\n ( \`**${randomKey}**\` ) `,
                                 line: false,
