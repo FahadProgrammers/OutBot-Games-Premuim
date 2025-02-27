@@ -18,45 +18,26 @@ import canvas, { loadImage } from "canvas";
 import path from "path";
 import pschema from "../../schema/SchemaPrefix";
 import Collecter from "../../utils/functions/MessageCollecter";
-import SchemaTheme from "../../schema/SchemaTheme";
-import SchemaChannel from "../../schema/SchemaChannel";
-
 
 export default class اسرع extends Command {
   constructor(client: CustomClient) {
     super(client, {
-      name: "اسرع",
-      description: "لعبه اسرع ( اسرع إجابه )",
+      name: "تكمله",
+      description: " يعطيك بداية احرف ونت تكمل.",
       category: Category.فرديه,
       cooldown: 3,
-      aliases: ["speed"],
+      aliases: ["كلمات", "تكملة"],
     });
   }
 
   async execute(message: Message) {
-    const randomword_1_1 = Math.floor(Math.random() * randomwordSuccess.length);
-    const randomword_1_2 = randomwordSuccess[randomword_1_1];
     const wordsss = await randomwords.words;
     const randomword_2_2 =
       wordsss[Math.floor(Math.random() * randomwords.words.length)];
     const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
-    const f = await SchemaTheme.findOne({
-      guildId: message.guild?.id
-    });
-    let filePath = path.resolve("src/utils/assets", "BOTBG.png");
+    const filePath = path.resolve("src/utils/assets", "BOTBG.png");
 
-    if(f) {
-      switch(f.theme) {
-        case "1":
-          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png")
-        break;
-        case "2":
-          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png")
-        break;
-      }
-    }
-   
     await loadImage(filePath)
       .then(async (image) => {
         canvas.registerFont(
@@ -69,43 +50,27 @@ export default class اسرع extends Command {
           }
         );
 
-    
         ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
         //Text
         ctx.font = "27px ImageFont";
         ctx.fillStyle = "White";
-        ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
+        ctx.fillText("كمل الكلمه قبل إنتهاء الوقت", 165, 180);
 
         //Time
         ctx.font = "25px ImageFont";
         ctx.fillStyle = "White";
-        switch(f?.theme) {
-          case "1":
-            ctx.fillText("5", 60, 235);
-            break;
-          case "2":
-            ctx.fillText("5", 43, 235);
-            break;
-        }
+        ctx.fillText("5", 60, 235);
 
         //Word
         ctx.font = "25px ImageFont";
         ctx.fillStyle = "White";
-        switch(f?.theme) {
-        case "1":
-        ctx.fillText(randomword_2_2, 320, 115); // x 320
-        break;
-        case "2":
-        ctx.fillText(randomword_2_2, 265, 115); // x 320
-        break;
-      }
-    })
+        ctx.fillText(randomword_2_2.length > 2 ? randomword_2_2.slice(0, -1) : "_", 320, 115); // x 350
+      })
       .catch((err) => {
         console.log(err);
       });
     const messageFetch = await message.reply({
-      files: [Canvas.toBuffer()
-      ],
+      files: [Canvas.toBuffer()],
     });
 
     const time_1 = Date.now();

@@ -51,6 +51,7 @@ const words_jm3_json_1 = __importDefault(require("../../utils/games/words.jm3.js
 const canvas_1 = __importStar(require("canvas"));
 const path_1 = __importDefault(require("path"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
+const SchemaTheme_1 = __importDefault(require("../../schema/SchemaTheme"));
 class جمع extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -63,11 +64,25 @@ class جمع extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const randomKey = Object.keys(words_jm3_json_1.default.words)[Math.floor(Math.random() * Object.keys(words_jm3_json_1.default.words).length)];
             const randomValue = words_jm3_json_1.default.words[randomKey];
             const Canvas = canvas_1.default.createCanvas(700, 250);
             const ctx = Canvas.getContext("2d");
-            const filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
+            const f = yield SchemaTheme_1.default.findOne({
+                guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id
+            });
+            let filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
+            if (f) {
+                switch (f.theme) {
+                    case "1":
+                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png");
+                        break;
+                    case "2":
+                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png");
+                        break;
+                }
+            }
             yield (0, canvas_1.loadImage)(filePath)
                 .then((image) => __awaiter(this, void 0, void 0, function* () {
                 canvas_1.default.registerFont(path_1.default.resolve("src/utils/assets/Fonts", "alfont_com_Wafeq-SemiBold.otf"), {
@@ -75,17 +90,31 @@ class جمع extends MessageCreate_1.default {
                 });
                 ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
                 //Text
-                ctx.font = "25px ImageFont";
+                ctx.font = "27px ImageFont";
                 ctx.fillStyle = "White";
-                ctx.fillText("✧ اجمع الكلمه قبل إنتهاء الوقت ✧", 165, 180);
+                ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
                 //Time
                 ctx.font = "25px ImageFont";
                 ctx.fillStyle = "White";
-                ctx.fillText("5", 60, 235);
+                switch (f === null || f === void 0 ? void 0 : f.theme) {
+                    case "1":
+                        ctx.fillText("5", 60, 235);
+                        break;
+                    case "2":
+                        ctx.fillText("5", 43, 235);
+                        break;
+                }
                 //Word
                 ctx.font = "25px ImageFont";
                 ctx.fillStyle = "White";
-                ctx.fillText(randomKey, 320, 115); // x 350
+                switch (f === null || f === void 0 ? void 0 : f.theme) {
+                    case "1":
+                        ctx.fillText(randomKey, 320, 115); // x 320
+                        break;
+                    case "2":
+                        ctx.fillText(randomKey, 265, 115); // x 320
+                        break;
+                }
             }))
                 .catch((err) => {
                 console.log(err);

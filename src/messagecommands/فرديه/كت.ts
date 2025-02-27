@@ -1,4 +1,4 @@
-import { AttachmentBuilder, Message } from "discord.js";
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
 import Command from "../../base/classes/MessageCreate";
 import CustomClient from "../../base/classes/CustomClient";
 import Category from "../../base/enums/Category";
@@ -35,7 +35,7 @@ export default class كت extends Command {
     );
     if (base) {
       await message.reply({
-        embeds: [base],
+        embeds: [base]
       });
     }
   }

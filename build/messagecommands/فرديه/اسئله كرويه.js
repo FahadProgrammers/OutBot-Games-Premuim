@@ -14,36 +14,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const kt_json_1 = __importDefault(require("../../utils/games/kt.json"));
+const success_1 = __importDefault(require("../../utils/games/success"));
+const qs_football_json_1 = __importDefault(require("../../utils/games/qs_football.json"));
+const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
 const BaseEmbed_1 = __importDefault(require("../../utils/embeds/BaseEmbed"));
-class كت extends MessageCreate_1.default {
+class football extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
-            name: "كت",
-            description: "لعبه كت ( سؤال وجواب )",
+            name: "كوره",
+            description: "اسئله في عالم الكوره.",
             category: Category_1.default.فرديه,
             cooldown: 3,
-            aliases: ["kt"],
+            aliases: ["football", "اسئله كرويه", "أسئله كرويه"],
         });
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const randomword_1 = Math.floor(Math.random() * kt_json_1.default.words.length);
-            const randomword_2 = kt_json_1.default.words[randomword_1];
+            const randomword_1_1 = Math.floor(Math.random() * success_1.default.length);
+            const randomword_1_2 = success_1.default[randomword_1_1];
+            const randomKey2 = Object.keys(qs_football_json_1.default.words)[Math.floor(Math.random() * Object.keys(qs_football_json_1.default.words).length)];
+            let randomword_2_2 = qs_football_json_1.default.words[randomKey2];
             if (!message.guild)
                 return;
             const base = yield (0, BaseEmbed_1.default)(this.client, message.guild, {
-                des: `## ${randomword_2}`,
                 line: false,
-                footer: "كت",
-                fields: "كت",
+                des: "##" + randomword_2_2.qs,
+                title: "**اسئله** كرويه ⚽",
+                footer: "⚽",
+                fields: "⚽",
             }, "Base");
             if (base) {
-                yield message.reply({
+                const messageFetch = yield message.reply({
                     embeds: [base]
                 });
+                const time_1 = Date.now();
+                let status = false;
+                try {
+                    yield (0, MessageCollecter_1.default)(this.client, messageFetch, randomword_2_2.jwab, time_1);
+                }
+                catch (err) {
+                    console.log("Error of Collecter!!");
+                }
             }
         });
     }
 }
-exports.default = كت;
+exports.default = football;

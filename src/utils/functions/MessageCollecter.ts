@@ -14,16 +14,22 @@ import pschema from "../../schema/SchemaPrefix";
 import success from "../games/success";
 import CustomClient from "../../base/classes/CustomClient";
 import SchemaChannel from "../../schema/SchemaChannel";
+import RamdanXP from "../../schema/RamdanXP";
 
 async function Collecter(client: CustomClient, message: Message, randomKey: string, time_1: number) {
   try {
     if (message.channel instanceof TextChannel) {
+      let filter;
+      if(message.mentions.users.first()) {
+       filter = (m: Message) => m.author.id === message.mentions.users.first()?.id || m.author.id === m.author.id;
+      } else {
+        filter = (m: Message) => m.author.id !== message.client.user?.id;
+      }
       const find = await SchemaChannel.findOne({
         guildId: message.guild?.id,
         channelId: message.channel.id
       });
 
-      const filter = (m: Message) => m.author.id !== message.client.user?.id;
       const collector = message.channel.createMessageCollector({
         filter,
         time: find?.time ? find.time * 1000 : 5000,
@@ -85,8 +91,13 @@ async function Collecter(client: CustomClient, message: Message, randomKey: stri
                 .setLabel("نظام النقاط")
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId("rank_info")
-                .setEmoji("<:badge:1343344820395184251>")
+                .setEmoji("<:badge:1343344820395184251>"),
+                new ButtonBuilder()
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId("ramdan")
+                .setEmoji("<:lamp:1344759310663811146>")
             );
+
 
             const prefixx = (await pschema.findOne({
               guildId: message.guild?.id,
@@ -131,7 +142,7 @@ async function Collecter(client: CustomClient, message: Message, randomKey: stri
               message.guild,
               {
                 title: "إجابه خاطئه!",
-                des: `> ${emoji.false} | للأسف، **إجابه خاطئه**.\n ( \`**${randomKey}**\``,
+                des: `> ${emoji.false} | للأسف، **إجابه خاطئه**.\n ( \`**${randomKey}** )\``,
                 line: false,
                 footer: "إجابه خاطئه!",
                 fields: "إجابه خاطئه!",

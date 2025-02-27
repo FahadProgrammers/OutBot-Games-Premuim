@@ -20,7 +20,7 @@ class event extends Command_1.default {
     constructor(client) {
         super(client, {
             data: new discord_js_1.SlashCommandBuilder()
-                .setName("event")
+                .setName("game")
                 .setDescription(`بدء تشغيل الالعاب المتوصله/واحده مع اختيار الأوامر.`)
                 .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.ManageGuild | discord_js_1.PermissionFlagsBits.Administrator)
                 .addSubcommand((command) => command

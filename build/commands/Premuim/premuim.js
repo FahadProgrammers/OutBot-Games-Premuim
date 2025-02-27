@@ -47,18 +47,7 @@ class Test extends Command_1.default {
                 .setDescription("اعدادات الالعاب.")
                 .addSubcommand(cmd => cmd
                 .setName('theme')
-                .setDescription("اختيار الصوره المُرسله في اوامر الالعاب."))
-                .addSubcommand(cmd => cmd
-                .setName('time')
-                .setDescription("اختيار مدة انتهى وقت اللعبه. ( ان لا يقل عن 4 ثوانً )")
-                .addNumberOption(cmd => cmd
-                .setName('time')
-                .setDescription("اختيار مدة انتهى وقت اللعبه. ( ان لا يقل عن 4 ثوانً )")
-                .setRequired(true))
-                .addChannelOption(cmd => cmd
-                .setName('channel')
-                .setDescription("حدد الروم التي يتم وضع الوقت فيها.")
-                .setRequired(true))))
+                .setDescription("اختيار الصوره المُرسله في اوامر الالعاب.")))
                 .addSubcommandGroup((command) => command
                 .setName("bot")
                 .setDescription(`اضافة اسم البوت.`)
@@ -776,7 +765,6 @@ class Test extends Command_1.default {
                             if (emb) {
                                 btns.components[0].setDisabled(true);
                                 btns.components[1].setDisabled(true);
-                                i.deferReply({ ephemeral: true });
                                 i.reply({ embeds: [emb], flags: discord_js_1.MessageFlags.Ephemeral });
                                 yield SchemaTheme_1.default.findOneAndUpdate({
                                     guildId: interaction.guild.id
@@ -790,7 +778,6 @@ class Test extends Command_1.default {
                         }
                     }));
                     collector.on('end', collected => {
-                        console.log(`Collected ${collected.size} interactions.`);
                     });
                 }
             }

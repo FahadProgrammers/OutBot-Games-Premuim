@@ -25,11 +25,17 @@ function Collecter(client, message, randomKey, time_1) {
         var _a;
         try {
             if (message.channel instanceof discord_js_1.TextChannel) {
+                let filter;
+                if (message.mentions.users.first()) {
+                    filter = (m) => { var _a; return m.author.id === ((_a = message.mentions.users.first()) === null || _a === void 0 ? void 0 : _a.id) || m.author.id === m.author.id; };
+                }
+                else {
+                    filter = (m) => { var _a; return m.author.id !== ((_a = message.client.user) === null || _a === void 0 ? void 0 : _a.id); };
+                }
                 const find = yield SchemaChannel_1.default.findOne({
                     guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id,
                     channelId: message.channel.id
                 });
-                const filter = (m) => { var _a; return m.author.id !== ((_a = message.client.user) === null || _a === void 0 ? void 0 : _a.id); };
                 const collector = message.channel.createMessageCollector({
                     filter,
                     time: (find === null || find === void 0 ? void 0 : find.time) ? find.time * 1000 : 5000,
@@ -82,7 +88,10 @@ function Collecter(client, message, randomKey, time_1) {
                                 .setLabel("نظام النقاط")
                                 .setStyle(discord_js_1.ButtonStyle.Secondary)
                                 .setCustomId("rank_info")
-                                .setEmoji("<:badge:1343344820395184251>"));
+                                .setEmoji("<:badge:1343344820395184251>"), new discord_js_1.ButtonBuilder()
+                                .setStyle(discord_js_1.ButtonStyle.Secondary)
+                                .setCustomId("ramdan")
+                                .setEmoji("<:lamp:1344759310663811146>"));
                             const prefixx = (yield SchemaPrefix_1.default.findOne({
                                 guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id,
                                 channelId: message.channel.id,
@@ -116,7 +125,7 @@ function Collecter(client, message, randomKey, time_1) {
                         if (message.guild) {
                             const wrongAnswerEmbed = yield (0, BaseEmbed_1.default)(client, message.guild, {
                                 title: "إجابه خاطئه!",
-                                des: `> ${emojis_1.default.false} | للأسف، **إجابه خاطئه**.\n ( \`**${randomKey}**\``,
+                                des: `> ${emojis_1.default.false} | للأسف، **إجابه خاطئه**.\n ( \`**${randomKey}** )\``,
                                 line: false,
                                 footer: "إجابه خاطئه!",
                                 fields: "إجابه خاطئه!",

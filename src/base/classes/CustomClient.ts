@@ -28,6 +28,7 @@ export default class CustomClient extends Client implements ICustomClient {
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates,
       ],
     });
 
@@ -103,7 +104,6 @@ private async startBot(bot: any): Promise<void> {
 
     this.user?.setStatus("dnd");
 
-    this.registerCommands();
   }
 
   private async registerCommands(): Promise<void> {
@@ -131,7 +131,6 @@ private async startBot(bot: any): Promise<void> {
     try {
       const setCommands: any = await rest.put(Routes.applicationCommands(clientId), { body: commands });
       const setCommandsDev: any = await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandsDev });
-
     } catch (error) {
       console.error("Failed to register commands:", error);
     }

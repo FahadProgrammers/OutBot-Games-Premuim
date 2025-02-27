@@ -19,7 +19,7 @@ class MessageCommandHandler extends Events_1.default {
     constructor(client) {
         super(client, {
             name: discord_js_1.Events.MessageCreate,
-            description: "Command Handler MessageCreate",
+            description: "MessageCreate Counter",
             once: false,
         });
     }

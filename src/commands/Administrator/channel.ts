@@ -206,19 +206,10 @@ export default class Test extends Command {
 
       new schema_1({
         guildId: interaction.guild.id,
-        channelId: [],
+        channelId: [channel.id],
         date: new Date(),
         dateend: new Date()
       }).save();
-
-      const schema_3 = await schema_1.findOne({
-        guildId: interaction.guild.id,
-      });
-      schema_3?.channelId.push(channel.id);
-      if (schema_3) {
-        schema_3.dateend = new Date();
-      }
-      await schema_3?.save();
       await interaction.editReply({
         embeds: [emb],
       });

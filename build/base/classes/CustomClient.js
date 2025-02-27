@@ -126,7 +126,6 @@ class CustomClient extends discord_js_1.Client {
             (_a = this.user) === null || _a === void 0 ? void 0 : _a.setActivity(active);
         }, 10000);
         (_a = this.user) === null || _a === void 0 ? void 0 : _a.setStatus("dnd");
-        this.registerCommands();
     }
     registerCommands() {
         return __awaiter(this, void 0, void 0, function* () {

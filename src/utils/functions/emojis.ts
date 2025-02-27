@@ -22,8 +22,8 @@ const emoji: emoji = {
   },
   true: "<:highquality:1343673377621278760>",
   trueURL: "https://cdn.discordapp.com/emojis/1343673377621278760.png?quality=lossless",
-  false: "<:IMG_27191:1343973356474601472>",
-  falseURL: "https://cdn.discordapp.com/emojis/1343973356474601472.png?quality=lossless",
+  false: "<:close:1342162786901299261>",
+  falseURL: "https://cdn.discordapp.com/emojis/1342162786901299261.png?quality=lossless",
   BaseURL: "https://cdn.discordapp.com/emojis/1343675920837513276.png?quality=lossless", //Logo
   esar_arrow: "<:1323739617790263326:1341704260483551323>",
   emen_arrow: "<:file:1341703206127931498>",

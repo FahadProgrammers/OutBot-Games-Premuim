@@ -11,7 +11,6 @@ interface schema {
 const schema2 = new Schema<schema>({
 guildId: String,
 channelId: Array,
-time: { type: Number, require: false },
 date: { type: Date, default: Date.now() },
 dateend: { type: Date, default: Date.now(), required: false }
 });

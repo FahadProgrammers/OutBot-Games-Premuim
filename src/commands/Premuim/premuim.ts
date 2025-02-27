@@ -59,20 +59,6 @@ export default class Test extends Command {
     .setName('theme')
     .setDescription("اختيار الصوره المُرسله في اوامر الالعاب.")
   )
-  .addSubcommand(cmd => cmd
-    .setName('time')
-    .setDescription("اختيار مدة انتهى وقت اللعبه. ( ان لا يقل عن 4 ثوانً )")
-    .addNumberOption(cmd => cmd
-      .setName('time')
-      .setDescription("اختيار مدة انتهى وقت اللعبه. ( ان لا يقل عن 4 ثوانً )")
-      .setRequired(true)
-    )
-    .addChannelOption(cmd => cmd
-      .setName('channel')
-      .setDescription("حدد الروم التي يتم وضع الوقت فيها.")
-      .setRequired(true)
-    )
-  )
 )
   .addSubcommandGroup((command) => command
       .setName("bot")
@@ -1036,11 +1022,10 @@ collector.on('collect', async (i)=> {
         if(emb) {
           btns.components[0].setDisabled(true);
           btns.components[1].setDisabled(true);
-    i.deferReply({ ephemeral: true })
 		i.reply({ embeds: [emb], flags: MessageFlags.Ephemeral });
     await SchemaTheme.findOneAndUpdate({
       guildId: interaction.guild.id
-    }, {
+    }, { 
       theme: i.customId.split("_")[0],
     },{ upsert: true, new: true });
 
@@ -1051,7 +1036,6 @@ collector.on('collect', async (i)=> {
 });
 
 collector.on('end', collected => {
-	console.log(`Collected ${collected.size} interactions.`);
 });
 }
 } catch(err) {

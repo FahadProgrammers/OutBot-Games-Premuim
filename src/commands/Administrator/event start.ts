@@ -17,7 +17,7 @@ export default class event extends Command {
   constructor(client: CustomClient) {
     super(client, {
       data: new SlashCommandBuilder()
-        .setName("event")
+        .setName("game")
         .setDescription(`بدء تشغيل الالعاب المتوصله/واحده مع اختيار الأوامر.`)
       .setDefaultMemberPermissions(
           PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator

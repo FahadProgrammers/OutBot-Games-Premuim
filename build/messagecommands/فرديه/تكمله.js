@@ -47,45 +47,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const MessageCreate_1 = __importDefault(require("../../base/classes/MessageCreate"));
 const Category_1 = __importDefault(require("../../base/enums/Category"));
-const success_1 = __importDefault(require("../../utils/games/success"));
 const words_json_1 = __importDefault(require("../../utils/games/words.json"));
 const canvas_1 = __importStar(require("canvas"));
 const path_1 = __importDefault(require("path"));
 const MessageCollecter_1 = __importDefault(require("../../utils/functions/MessageCollecter"));
-const SchemaTheme_1 = __importDefault(require("../../schema/SchemaTheme"));
 class اسرع extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
-            name: "اسرع",
-            description: "لعبه اسرع ( اسرع إجابه )",
+            name: "تكمله",
+            description: " يعطيك بداية احرف ونت تكمل.",
             category: Category_1.default.فرديه,
             cooldown: 3,
-            aliases: ["speed"],
+            aliases: ["كلمات", "تكملة"],
         });
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            const randomword_1_1 = Math.floor(Math.random() * success_1.default.length);
-            const randomword_1_2 = success_1.default[randomword_1_1];
             const wordsss = yield words_json_1.default.words;
             const randomword_2_2 = wordsss[Math.floor(Math.random() * words_json_1.default.words.length)];
             const Canvas = canvas_1.default.createCanvas(700, 250);
             const ctx = Canvas.getContext("2d");
-            const f = yield SchemaTheme_1.default.findOne({
-                guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id
-            });
-            let filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
-            if (f) {
-                switch (f.theme) {
-                    case "1":
-                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png");
-                        break;
-                    case "2":
-                        filePath = path_1.default.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png");
-                        break;
-                }
-            }
+            const filePath = path_1.default.resolve("src/utils/assets", "BOTBG.png");
             yield (0, canvas_1.loadImage)(filePath)
                 .then((image) => __awaiter(this, void 0, void 0, function* () {
                 canvas_1.default.registerFont(path_1.default.resolve("src/utils/assets/Fonts", "alfont_com_Wafeq-SemiBold.otf"), {
@@ -95,36 +77,21 @@ class اسرع extends MessageCreate_1.default {
                 //Text
                 ctx.font = "27px ImageFont";
                 ctx.fillStyle = "White";
-                ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
+                ctx.fillText("كمل الكلمه قبل إنتهاء الوقت", 165, 180);
                 //Time
                 ctx.font = "25px ImageFont";
                 ctx.fillStyle = "White";
-                switch (f === null || f === void 0 ? void 0 : f.theme) {
-                    case "1":
-                        ctx.fillText("5", 60, 235);
-                        break;
-                    case "2":
-                        ctx.fillText("5", 43, 235);
-                        break;
-                }
+                ctx.fillText("5", 60, 235);
                 //Word
                 ctx.font = "25px ImageFont";
                 ctx.fillStyle = "White";
-                switch (f === null || f === void 0 ? void 0 : f.theme) {
-                    case "1":
-                        ctx.fillText(randomword_2_2, 320, 115); // x 320
-                        break;
-                    case "2":
-                        ctx.fillText(randomword_2_2, 265, 115); // x 320
-                        break;
-                }
+                ctx.fillText(randomword_2_2.length > 2 ? randomword_2_2.slice(0, -1) : "_", 320, 115); // x 350
             }))
                 .catch((err) => {
                 console.log(err);
             });
             const messageFetch = yield message.reply({
-                files: [Canvas.toBuffer()
-                ],
+                files: [Canvas.toBuffer()],
             });
             const time_1 = Date.now();
             let status = false;

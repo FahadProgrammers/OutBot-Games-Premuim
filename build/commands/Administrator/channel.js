@@ -164,18 +164,10 @@ class Test extends Command_1.default {
                         }
                         new SchemaChannel_1.default({
                             guildId: interaction.guild.id,
-                            channelId: [],
+                            channelId: [channel.id],
                             date: new Date(),
                             dateend: new Date()
                         }).save();
-                        const schema_3 = yield SchemaChannel_1.default.findOne({
-                            guildId: interaction.guild.id,
-                        });
-                        schema_3 === null || schema_3 === void 0 ? void 0 : schema_3.channelId.push(channel.id);
-                        if (schema_3) {
-                            schema_3.dateend = new Date();
-                        }
-                        yield (schema_3 === null || schema_3 === void 0 ? void 0 : schema_3.save());
                         yield interaction.editReply({
                             embeds: [emb],
                         });
