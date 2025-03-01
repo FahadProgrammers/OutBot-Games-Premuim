@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { Client, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
+import { ActivityType, Client, ClientPresence, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
 import ICustomClient from "../interfaces/ICustomClient";
 import Handler from "./Handler";
 import Command from "./Command";
@@ -90,17 +90,15 @@ private async startBot(bot: any): Promise<void> {
     if (!this.user) return;
 
     const Activitys = [
-      "OutBot Games!",
+      "OutBot Games Premuim!",
       "Play Now!",
       "إلعب الان",
       "لا إِلَهَ إِلا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِين",
-      "لاتخلي اللعب يلهيك عن الصلاه"
+      "لاتخلي اللعب يلهيك عن الصلاه",
+      "رمضان كريم"
     ];
 
-    setInterval(() => {
-      const active = Activitys[Math.floor(Math.random() * Activitys.length)];
-      this.user?.setActivity(active);
-    }, 10000);
+
 
     this.user?.setStatus("dnd");
 

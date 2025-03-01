@@ -79,7 +79,7 @@ function Collecter(client, message, randomKey, time_1) {
                                 .setCustomId("disabled_ranl")
                                 .setDisabled(true)
                                 .setStyle(discord_js_1.ButtonStyle.Secondary)
-                                .setLabel(`${rank_2.name} [ ${(_d = schema_3.p) !== null && _d !== void 0 ? _d : 1} ]`), new discord_js_1.ButtonBuilder()
+                                .setLabel(`${rank_2.name} - ${(_d = schema_3.p) !== null && _d !== void 0 ? _d : 1}`), new discord_js_1.ButtonBuilder()
                                 .setEmoji("<:time:1343029577701654568>")
                                 .setLabel(content)
                                 .setCustomId("dis")

@@ -104,16 +104,22 @@ class فكك extends MessageCreate_1.default {
                     case "2":
                         ctx.fillText("5", 43, 235);
                         break;
+                    default:
+                        ctx.fillText("5", 60, 235);
+                        break;
                 }
                 //Word
                 ctx.font = "25px ImageFont";
                 ctx.fillStyle = "White";
                 switch (f === null || f === void 0 ? void 0 : f.theme) {
                     case "1":
-                        ctx.fillText(randomKey, 320, 115); // x 320
+                        ctx.fillText(randomValue, 320, 115); // x 320
                         break;
                     case "2":
-                        ctx.fillText(randomKey, 265, 115); // x 320
+                        ctx.fillText(randomValue, 265, 115); // x 320
+                        break;
+                    default:
+                        ctx.fillText(randomValue, 320, 115); // x 320
                         break;
                 }
             }))

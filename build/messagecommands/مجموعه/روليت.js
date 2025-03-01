@@ -19,6 +19,7 @@ const SchemaRoulette_1 = __importDefault(require("../../schema/Roulette/SchemaRo
 const wheel_1 = require("../../utils/roulette/wheel");
 const emojis_1 = __importDefault(require("../../utils/functions/emojis"));
 const SchemaRoulettePoints_1 = __importDefault(require("../../schema/Roulette/SchemaRoulettePoints"));
+const SchemaCommandControl_1 = __importDefault(require("../../schema/SchemaCommandControl"));
 class Roulette extends MessageCreate_1.default {
     constructor(client) {
         super(client, {
@@ -31,19 +32,28 @@ class Roulette extends MessageCreate_1.default {
     }
     execute(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
             try {
+                const f = yield SchemaCommandControl_1.default.findOne({
+                    guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id,
+                });
+                if (!f) {
+                    if (!((_b = message.member) === null || _b === void 0 ? void 0 : _b.permissions.has("ManageGuild"))) {
+                        return yield message.reply({
+                            content: `${emojis_1.default.false} | لاتملك صلاحيه **ManageGuild** لتشغيل الأمر`
+                        });
+                    }
+                }
                 //Types
                 let roulette_status = true;
                 const idMap = new Map();
-                const playersMap = [];
                 //Game in TimeStamp ( not used)
                 // const timestart = `**<t:${Math.floor(
                 //   (Date.now() + 15 /* 15 Seconds */ * 1000) / 1000
                 // )}:R>**`;
                 //Find Game To DataBase
                 const findGame = yield SchemaRoulette_1.default.findOne({
-                    guildId: (_a = message.guild) === null || _a === void 0 ? void 0 : _a.id,
+                    guildId: (_c = message.guild) === null || _c === void 0 ? void 0 : _c.id,
                     channelId: message.channel.id,
                 });
                 let msgRemoveRoulette;
@@ -51,7 +61,7 @@ class Roulette extends MessageCreate_1.default {
                     const ButtonRow = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
                         .setStyle(discord_js_1.ButtonStyle.Secondary)
                         .setLabel(`إلغاء اللعبه المتوفره`)
-                        .setCustomId(`rremove_${message.guildId}`)
+                        .setCustomId(`rremove_${(_d = message.guild) === null || _d === void 0 ? void 0 : _d.id}_${findGame.msgId}`)
                         .setEmoji("<:emoji_24:1327724457732603945>"));
                     msgRemoveRoulette = yield message.reply({
                         content: `${emojis_1.default.false} | لايمكن تشغيل اكثر من لعبه روليت بنفس الروم!`,
@@ -116,27 +126,27 @@ class Roulette extends MessageCreate_1.default {
                         });
                     }, 1000);
                     let findGameMsg = yield SchemaRoulette_1.default.findOne({
-                        guildId: (_b = message.guild) === null || _b === void 0 ? void 0 : _b.id,
+                        guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id,
                         channelId: message.channel.id,
                         msgId: msg.id,
                     });
                     if (!findGameMsg) {
                         yield new SchemaRoulette_1.default({
-                            guildId: (_c = message.guild) === null || _c === void 0 ? void 0 : _c.id,
+                            guildId: (_f = message.guild) === null || _f === void 0 ? void 0 : _f.id,
                             channelId: message.channel.id,
                             players: [],
                             msgId: msg.id,
                         }).save();
                     }
                     //Local DataBase
-                    idMap.set(`${(_d = message.guild) === null || _d === void 0 ? void 0 : _d.id}-${message.channel.id}-${msg.id}`, {
-                        guildId: (_f = (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id) !== null && _f !== void 0 ? _f : "",
+                    idMap.set(`${(_g = message.guild) === null || _g === void 0 ? void 0 : _g.id}-${message.channel.id}-${msg.id}`, {
+                        guildId: (_j = (_h = message.guild) === null || _h === void 0 ? void 0 : _h.id) !== null && _j !== void 0 ? _j : "",
                         channelId: message.channel.id,
                         number: 0,
                         msgId: msg.id,
                     });
                     setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                        var _a, _b;
+                        var _a, _b, _c;
                         //Disabled Buttons
                         const disabledRow = new discord_js_1.ActionRowBuilder().addComponents(actionRows.components[0].setDisabled(true), actionRows.components[1].setDisabled(true), actionRows.components[2].setDisabled(true), actionRows.components[3]);
                         yield msg.edit({ components: [disabledRow] });
@@ -159,27 +169,34 @@ class Roulette extends MessageCreate_1.default {
                                 }));
                                 return;
                             }
-                            yield (0, wheel_1.startRouletteGame)(message, playersMap, this.client, msg.id);
+                            findGameMsg = yield SchemaRoulette_1.default.findOne({
+                                guildId: (_c = message.guild) === null || _c === void 0 ? void 0 : _c.id,
+                                channelId: message.channel.id,
+                                msgId: msg.id,
+                            });
+                            yield (0, wheel_1.startRouletteGame)(message, findGameMsg === null || findGameMsg === void 0 ? void 0 : findGameMsg.players, this.client, msg.id);
                         }
                     }), 15000);
                     this.client.on("interactionCreate", (interaction) => __awaiter(this, void 0, void 0, function* () {
-                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
                         if (!interaction.isButton())
                             return;
                         const username = interaction.user.username;
                         const key = `${(_a = message.guild) === null || _a === void 0 ? void 0 : _a.id}-${message.channel.id}-${msg.id}`;
                         const data = idMap.get(key);
-                        if (interaction.customId === `rremove_${interaction.guildId}`) {
-                            if (!((_b = interaction.memberPermissions) === null || _b === void 0 ? void 0 : _b.has("ManageEvents"))) {
+                        if (interaction.customId.startsWith(`rremove_${(_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.id}_`)) {
+                            const [, gid, msgid] = interaction.customId.split("_");
+                            console.log(msgid);
+                            if (!((_c = interaction.memberPermissions) === null || _c === void 0 ? void 0 : _c.has("ManageEvents"))) {
                                 yield interaction.reply({
                                     content: `${emojis_1.default.false} | ليس لديك الصلاحيات الكافيه لإلغاء اللعبه!`,
                                 });
                                 return;
                             }
                             const findGame = yield SchemaRoulette_1.default.findOne({
-                                guildId: (_c = message.guild) === null || _c === void 0 ? void 0 : _c.id,
+                                guildId: (_d = message.guild) === null || _d === void 0 ? void 0 : _d.id,
                                 channelId: message.channel.id,
-                                msgId: msg.id,
+                                msgId: msgid,
                             });
                             if (!findGame) {
                                 yield interaction.reply({
@@ -212,7 +229,7 @@ class Roulette extends MessageCreate_1.default {
                                 components: components.map((row) => row.toJSON()),
                             });
                             yield findGame.deleteOne({
-                                guildId: (_d = message.guild) === null || _d === void 0 ? void 0 : _d.id,
+                                guildId: (_e = message.guild) === null || _e === void 0 ? void 0 : _e.id,
                                 channelId: message.channel.id,
                                 msgId: msg.id,
                             });
@@ -222,8 +239,8 @@ class Roulette extends MessageCreate_1.default {
                             let disableS = false;
                             let disableDobule = false;
                             const findRoulette = yield SchemaRoulette_1.default.findOne({
-                                guildId: (_e = interaction.guild) === null || _e === void 0 ? void 0 : _e.id,
-                                channelId: (_f = interaction.channel) === null || _f === void 0 ? void 0 : _f.id,
+                                guildId: (_f = interaction.guild) === null || _f === void 0 ? void 0 : _f.id,
+                                channelId: (_g = interaction.channel) === null || _g === void 0 ? void 0 : _g.id,
                                 msgId: data === null || data === void 0 ? void 0 : data.msgId,
                             });
                             const find = findRoulette === null || findRoulette === void 0 ? void 0 : findRoulette.players.find((p) => { var _a; return p.userId === ((_a = interaction.user) === null || _a === void 0 ? void 0 : _a.id); });
@@ -235,19 +252,19 @@ class Roulette extends MessageCreate_1.default {
                             }
                             const findPoints = (yield SchemaRoulettePoints_1.default.findOne({
                                 guildId: interaction.guildId,
-                                userId: (_g = interaction.user) === null || _g === void 0 ? void 0 : _g.id,
+                                userId: (_h = interaction.user) === null || _h === void 0 ? void 0 : _h.id,
                             })) || { p: "لايوجد" };
                             const rows = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
                                 .setEmoji("<:security1:1329156583992590456>")
                                 .setLabel("الحمايه الشخصيه")
                                 .setDisabled(disableS)
                                 .setStyle(discord_js_1.ButtonStyle.Secondary)
-                                .setCustomId(`roulette_secruity_${interaction.user.id}_${(_h = interaction.guild) === null || _h === void 0 ? void 0 : _h.id}_${data === null || data === void 0 ? void 0 : data.msgId}_${data === null || data === void 0 ? void 0 : data.number}`), new discord_js_1.ButtonBuilder()
+                                .setCustomId(`roulette_secruity_${interaction.user.id}_${(_j = interaction.guild) === null || _j === void 0 ? void 0 : _j.id}_${data === null || data === void 0 ? void 0 : data.msgId}_${data === null || data === void 0 ? void 0 : data.number}`), new discord_js_1.ButtonBuilder()
                                 .setEmoji("<:star:1328433221536583831>")
                                 .setLabel("دبل نقاط")
                                 .setDisabled(disableDobule)
                                 .setStyle(discord_js_1.ButtonStyle.Secondary)
-                                .setCustomId(`roulette_dobule_${interaction.user.id}_${(_j = interaction.guild) === null || _j === void 0 ? void 0 : _j.id}_${data === null || data === void 0 ? void 0 : data.msgId}_${data === null || data === void 0 ? void 0 : data.number}`), new discord_js_1.ButtonBuilder()
+                                .setCustomId(`roulette_dobule_${interaction.user.id}_${(_k = interaction.guild) === null || _k === void 0 ? void 0 : _k.id}_${data === null || data === void 0 ? void 0 : data.msgId}_${data === null || data === void 0 ? void 0 : data.number}`), new discord_js_1.ButtonBuilder()
                                 .setEmoji("<:Arrow1:1299711671052402718>")
                                 .setLabel(`تملك: ${findPoints.p}`)
                                 .setDisabled(true)
@@ -270,46 +287,47 @@ class Roulette extends MessageCreate_1.default {
                             });
                         }
                         if (interaction.customId === "joingame" && data) {
-                            const findisReadyPlayer = yield playersMap.find(p => p.userId === interaction.user.id);
-                            if (findisReadyPlayer) {
-                                yield interaction.reply({
-                                    content: `${emojis_1.default.false} | انت داخل اللعبه بلفعل!`,
-                                    ephemeral: true
-                                });
-                                return;
-                            }
-                            playersMap.push({
+                            const findGame = yield SchemaRoulette_1.default.findOne({
+                                guildId: (_l = message.guild) === null || _l === void 0 ? void 0 : _l.id,
+                                channelId: message.channel.id,
+                                msgId: msg.id,
+                            });
+                            const findisReadyPlayer = yield (findGame === null || findGame === void 0 ? void 0 : findGame.players.find(p => p.userId === interaction.user.id));
+                            // if(findisReadyPlayer) {
+                            //   await interaction.reply({
+                            //     content: `${emoji.false} | انت داخل اللعبه بلفعل!`,
+                            //     ephemeral: true
+                            //   });
+                            //   return;
+                            // }
+                            findGame === null || findGame === void 0 ? void 0 : findGame.players.push({
                                 user: interaction.user,
                                 username: username,
                                 userId: interaction.user.id,
-                                number: data.number,
+                                number: data.number + 1,
                                 image: interaction.user.displayAvatarURL({
                                     size: 256,
                                     extension: "png",
                                 }),
                             });
+                            findGame === null || findGame === void 0 ? void 0 : findGame.save();
                             //add number to use next player
                             data.number += 1;
                             const gameData = yield SchemaRoulette_1.default.findOne({
-                                guildId: (_k = message.guild) === null || _k === void 0 ? void 0 : _k.id,
+                                guildId: (_m = message.guild) === null || _m === void 0 ? void 0 : _m.id,
                                 channelId: message.channel.id,
                                 msgId: msg.id,
                             });
-                            if (gameData) {
-                                //Add Players To Main DataBase
-                                yield gameData.updateOne({ players: playersMap });
-                            }
-                            ;
                             // تعريف المتغيرات
-                            const PlayersmapToString = playersMap && Array.isArray(playersMap) && playersMap.length > 0
-                                ? playersMap
-                                    .map((data, index) => { var _a; return `<@${(_a = data.user) === null || _a === void 0 ? void 0 : _a.id}> | #${index + 1}`; })
+                            const PlayersmapToString = findGame && Array.isArray(findGame.players) && findGame.players.length > 0
+                                ? findGame.players
+                                    .map((data, index) => `<@${data.userId}> | #${index + 1}`)
                                     .join("\n")
                                 : "لايوجد";
                             try {
                                 if (embd.data.fields) {
                                     // embd.data.fields[1].value =  PlayersmapToString,
-                                    embd.data.description = `__**اللاعبين:**__\n${PlayersmapToString}`;
+                                    embd.data.fields[1].value = `${PlayersmapToString || "لايوجد"}`;
                                     // تحديث التفاعل بالرسالة الجديدة
                                     yield interaction.update({ embeds: [embd] });
                                 }
@@ -320,18 +338,17 @@ class Roulette extends MessageCreate_1.default {
                         }
                         if (interaction.customId === "leavegame") {
                             const gameData = yield SchemaRoulette_1.default.findOne({
-                                guildId: (_l = message.guild) === null || _l === void 0 ? void 0 : _l.id,
+                                guildId: (_o = message.guild) === null || _o === void 0 ? void 0 : _o.id,
                                 channelId: message.channel.id,
                                 msgId: msg.id,
                             });
                             if (gameData) {
-                                const index = playersMap.findIndex((player) => player.user.id === interaction.user.id);
+                                const index = gameData.players.findIndex((player) => player.user.id === interaction.user.id);
                                 if (index !== -1) {
-                                    const removedPlayer = playersMap.splice(index, 1)[0];
-                                    gameData.players = playersMap;
+                                    const removedPlayer = gameData.players.splice(index, 1)[0];
                                     yield gameData.save();
                                     if (embd.data.fields) {
-                                        gameData.players = playersMap;
+                                        gameData.players = gameData.players;
                                         yield gameData.save();
                                         //Delete in Player in Filed
                                         embd.data.fields = embd.data.fields.filter((field) => !field.value.includes(`<@${removedPlayer.userId}>`));

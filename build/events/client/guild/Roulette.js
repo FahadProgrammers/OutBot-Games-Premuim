@@ -129,15 +129,13 @@ class CommandHandler extends Events_1.default {
                         guildId: (_f = interaction.guild) === null || _f === void 0 ? void 0 : _f.id,
                         userId: (_g = interaction.user) === null || _g === void 0 ? void 0 : _g.id,
                     });
-                    // if (!findPointsRoulette || findPointsRoulette?.p < 100) {
-                    //   await interaction.reply({
-                    //     content: `ليس لديك النقاط الكافية لتفعيل الحارس الشخصي تحتاج الى: \`${
-                    //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-                    //     }\``,
-                    //     ephemeral: true,
-                    //   });
-                    //   return;
-                    // }
+                    if (!findPointsRoulette || (findPointsRoulette === null || findPointsRoulette === void 0 ? void 0 : findPointsRoulette.p) < 100) {
+                        yield interaction.reply({
+                            content: `ليس لديك النقاط الكافية لتفعيل الحارس الشخصي تحتاج الى: \`${findPointsRoulette ? findPointsRoulette.p - 100 : "لاتملك"}\``,
+                            ephemeral: true,
+                        });
+                        return;
+                    }
                     const message = yield ((_h = interaction.channel) === null || _h === void 0 ? void 0 : _h.messages.fetch(id));
                     const findRoulette = yield SchemaRoulette_1.default.findOne({
                         guildId: (_j = interaction.guild) === null || _j === void 0 ? void 0 : _j.id,
@@ -177,15 +175,13 @@ class CommandHandler extends Events_1.default {
                         guildId: (_l = interaction.guild) === null || _l === void 0 ? void 0 : _l.id,
                         userId: (_m = interaction.user) === null || _m === void 0 ? void 0 : _m.id,
                     });
-                    // if (!findPointsRoulette || findPointsRoulette?.p < 150) {
-                    //   await interaction.reply({
-                    //     content: `ليس لديك النقاط الكافية لتفعيل الغاء روليت تحتاج الى: \`${
-                    //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-                    //     }\``,
-                    //     ephemeral: true,
-                    //   });
-                    //   return;
-                    // }
+                    if (!findPointsRoulette || (findPointsRoulette === null || findPointsRoulette === void 0 ? void 0 : findPointsRoulette.p) < 150) {
+                        yield interaction.reply({
+                            content: `ليس لديك النقاط الكافية لتفعيل الغاء روليت تحتاج الى: \`${findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"}\``,
+                            ephemeral: true,
+                        });
+                        return;
+                    }
                     const findRoulette = yield SchemaRoulette_1.default.findOne({
                         guildId: (_o = interaction.guild) === null || _o === void 0 ? void 0 : _o.id,
                         channelId: (_p = interaction.channel) === null || _p === void 0 ? void 0 : _p.id,
@@ -261,15 +257,13 @@ class CommandHandler extends Events_1.default {
                         guildId: (_t = interaction.guild) === null || _t === void 0 ? void 0 : _t.id,
                         userId: (_u = interaction.user) === null || _u === void 0 ? void 0 : _u.id,
                     });
-                    // if (!findPointsRoulette || findPointsRoulette?.p < 50) {
-                    //   await interaction.reply({
-                    //     content: `ليس لديك النقاط الكافية لتفعيل دبل نقاط روليت تحتاج الى: \`${
-                    //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-                    //     }\``,
-                    //     ephemeral: true,
-                    //   });
-                    //   return;
-                    // }
+                    if (!findPointsRoulette || (findPointsRoulette === null || findPointsRoulette === void 0 ? void 0 : findPointsRoulette.p) < 50) {
+                        yield interaction.reply({
+                            content: `ليس لديك النقاط الكافية لتفعيل دبل نقاط روليت تحتاج الى: \`${findPointsRoulette ? findPointsRoulette.p - 50 : "لاتملك"}\``,
+                            ephemeral: true,
+                        });
+                        return;
+                    }
                     const message = yield ((_v = interaction.channel) === null || _v === void 0 ? void 0 : _v.messages.fetch(id));
                     const findRoulette = yield SchemaRoulette_1.default.findOne({
                         guildId: (_w = interaction.guild) === null || _w === void 0 ? void 0 : _w.id,

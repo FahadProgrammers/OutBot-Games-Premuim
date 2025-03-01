@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
+  Emoji,
   Message,
   SlashCommandSubcommandBuilder,
   TextChannel,
@@ -16,6 +17,7 @@ import schemaGame from "../../schema/Roulette/SchemaRoulette";
 import { startRouletteGame } from "../../utils/roulette/wheel";
 import emoji from "../../utils/functions/emojis";
 import roulettePoints from "../../schema/Roulette/SchemaRoulettePoints";
+import SchemaCommandControl from "../../schema/SchemaCommandControl";
 
 export default class Roulette extends Command {
   constructor(client: CustomClient) {
@@ -30,21 +32,23 @@ export default class Roulette extends Command {
 
   async execute(message: Message) {
     try {
+      const f = await SchemaCommandControl.findOne({
+        guildId: message.guild?.id,
+      });
+      if(!f) {
+        if(!message.member?.permissions.has("ManageGuild"))  {
+          return await message.reply({
+            content: `${emoji.false} | لاتملك صلاحيه **ManageGuild** لتشغيل الأمر`
+          });
+        }
+      }
       //Types
       let roulette_status = true;
       const idMap = new Map<
         string,
         { guildId: string; channelId: string; number: number; msgId: string }
       >();
-      const playersMap: Array<{
-        security?: boolean;
-        winner?: boolean;
-        user: any;
-        username: string;
-        userId: string;
-        number: number;
-        image: string;
-      }> = [];
+
 
       //Game in TimeStamp ( not used)
       // const timestart = `**<t:${Math.floor(
@@ -63,7 +67,7 @@ let msgRemoveRoulette: Message;
           new ButtonBuilder()
           .setStyle(ButtonStyle.Secondary)
           .setLabel(`إلغاء اللعبه المتوفره`)
-          .setCustomId(`rremove_${message.guildId}`)
+          .setCustomId(`rremove_${message.guild?.id}_${findGame.msgId}`)
           .setEmoji("<:emoji_24:1327724457732603945>")
         );
 
@@ -202,7 +206,13 @@ let msgRemoveRoulette: Message;
               });
               return;
             }
-            await startRouletteGame(message, playersMap, this.client, msg.id);
+            findGameMsg = await schemaGame.findOne({
+              guildId: message.guild?.id,
+              channelId: message.channel.id,
+              msgId: msg.id,
+            });
+            
+            await startRouletteGame(message, findGameMsg?.players, this.client, msg.id);
           }
         }, 15000);
 
@@ -214,8 +224,10 @@ let msgRemoveRoulette: Message;
           const data = idMap.get(key);
 
 
-          if(interaction.customId === `rremove_${interaction.guildId}`) {
+          if(interaction.customId.startsWith(`rremove_${interaction.guild?.id}_`)) {
 
+            const [, gid, msgid] = interaction.customId.split("_");
+            console.log(msgid)
          if(!interaction.memberPermissions?.has("ManageEvents")) {
           await interaction.reply({
             content: `${emoji.false} | ليس لديك الصلاحيات الكافيه لإلغاء اللعبه!`,
@@ -226,7 +238,7 @@ let msgRemoveRoulette: Message;
           const findGame = await schemaGame.findOne({
             guildId: message.guild?.id,
             channelId: message.channel.id,
-            msgId: msg.id,
+            msgId: msgid,
           });
 
 
@@ -351,25 +363,33 @@ let msgRemoveRoulette: Message;
           }
 
           if (interaction.customId === "joingame" && data) {
-            const findisReadyPlayer = await playersMap.find(p => p.userId ===  interaction.user.id);
-            if(findisReadyPlayer) {
-              await interaction.reply({
-                content: `${emoji.false} | انت داخل اللعبه بلفعل!`,
-                ephemeral: true
-              });
-              return;
-            }
+            const findGame = await schemaGame.findOne({
+              guildId: message.guild?.id,
+              channelId: message.channel.id,
+              msgId: msg.id,
+            });
+  
+            const findisReadyPlayer = await findGame?.players.find(p => p.userId ===  interaction.user.id);
+            // if(findisReadyPlayer) {
+            //   await interaction.reply({
+            //     content: `${emoji.false} | انت داخل اللعبه بلفعل!`,
+            //     ephemeral: true
+            //   });
+            //   return;
+            // }
 
-            playersMap.push({
+            findGame?.players.push({
               user: interaction.user,
               username: username,
               userId: interaction.user.id,
-              number: data.number,
+              number: data.number + 1,
               image: interaction.user.displayAvatarURL({
                 size: 256,
                 extension: "png",
               }),
             });
+
+            findGame?.save();
 
             //add number to use next player
 
@@ -380,22 +400,19 @@ let msgRemoveRoulette: Message;
               msgId: msg.id,
             });
 
-            if (gameData) {
-              //Add Players To Main DataBase
-              await gameData.updateOne({ players: playersMap });
-            };
+        
           
             // تعريف المتغيرات
-const PlayersmapToString = playersMap && Array.isArray(playersMap) && playersMap.length > 0
-? playersMap
-    .map((data, index) => `<@${data.user?.id}> | #${index + 1}`)
+const PlayersmapToString = findGame && Array.isArray(findGame.players) && findGame.players.length > 0
+? findGame.players
+    .map((data, index) => `<@${data.userId}> | #${index + 1}`)
     .join("\n")
 : "لايوجد";
 
 try {
   if(embd.data.fields) {
 // embd.data.fields[1].value =  PlayersmapToString,
-embd.data.description = `__**اللاعبين:**__\n${PlayersmapToString}`
+embd.data.fields[1].value = `${PlayersmapToString || "لايوجد"}`
 
 // تحديث التفاعل بالرسالة الجديدة
 await interaction.update({ embeds: [embd] });
@@ -416,17 +433,16 @@ console.error("حدث خطأ أثناء تحديث الرسالة:", error);
 
             if (gameData) {
 
-              const index = playersMap.findIndex(
+              const index = gameData.players.findIndex(
                 (player) => player.user.id === interaction.user.id
               );
               if (index !== -1) {
-                const removedPlayer = playersMap.splice(index, 1)[0];
+                const removedPlayer = gameData.players.splice(index, 1)[0];
 
-                gameData.players = playersMap;
                 await gameData.save();
                 if (embd.data.fields) {
 
-                  gameData.players = playersMap;
+                  gameData.players = gameData.players;
                   await gameData.save();
 
                   //Delete in Player in Filed

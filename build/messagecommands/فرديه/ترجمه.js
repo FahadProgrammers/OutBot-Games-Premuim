@@ -108,6 +108,9 @@ class اسرع extends MessageCreate_1.default {
                     case "2":
                         ctx.fillText("5", 43, 235);
                         break;
+                    default:
+                        ctx.fillText("5", 60, 235);
+                        break;
                 }
                 //Word
                 ctx.font = "25px ImageFont";
@@ -118,6 +121,9 @@ class اسرع extends MessageCreate_1.default {
                         break;
                     case "2":
                         ctx.fillText(randomword_2_2, 265, 115); // x 320
+                        break;
+                    default:
+                        ctx.fillText(randomword_2_2, 320, 115); // x 320
                         break;
                 }
             }))

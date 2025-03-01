@@ -80,7 +80,7 @@ async function Collecter(client: CustomClient, message: Message, randomKey: stri
                 .setCustomId("disabled_ranl")
                 .setDisabled(true)
                 .setStyle(ButtonStyle.Secondary)
-                .setLabel(`${rank_2.name} [ ${schema_3.p ?? 1} ]`),
+                .setLabel(`${rank_2.name} - ${schema_3.p ?? 1}`),
               new ButtonBuilder()
                 .setEmoji("<:time:1343029577701654568>")
                 .setLabel(content)

@@ -104,6 +104,9 @@ class مفرد extends MessageCreate_1.default {
                     case "2":
                         ctx.fillText("5", 43, 235);
                         break;
+                    default:
+                        ctx.fillText("5", 60, 235);
+                        break;
                 }
                 //Word
                 ctx.font = "25px ImageFont";
@@ -114,6 +117,9 @@ class مفرد extends MessageCreate_1.default {
                         break;
                     case "2":
                         ctx.fillText(randomValue, 265, 115); // x 320
+                        break;
+                    default:
+                        ctx.fillText(randomValue, 320, 115); // x 320
                         break;
                 }
             }))

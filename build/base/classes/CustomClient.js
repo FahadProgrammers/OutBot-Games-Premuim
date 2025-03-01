@@ -59,6 +59,7 @@ class CustomClient extends discord_js_1.Client {
                 discord_js_1.GatewayIntentBits.GuildMessages,
                 discord_js_1.GatewayIntentBits.MessageContent,
                 discord_js_1.GatewayIntentBits.GuildMembers,
+                discord_js_1.GatewayIntentBits.GuildVoiceStates,
             ],
         });
         this.setMaxListeners(0);
@@ -114,17 +115,13 @@ class CustomClient extends discord_js_1.Client {
         if (!this.user)
             return;
         const Activitys = [
-            "OutBot Games!",
+            "OutBot Games Premuim!",
             "Play Now!",
             "إلعب الان",
             "لا إِلَهَ إِلا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِين",
-            "لاتخلي اللعب يلهيك عن الصلاه"
+            "لاتخلي اللعب يلهيك عن الصلاه",
+            "رمضان كريم"
         ];
-        setInterval(() => {
-            var _a;
-            const active = Activitys[Math.floor(Math.random() * Activitys.length)];
-            (_a = this.user) === null || _a === void 0 ? void 0 : _a.setActivity(active);
-        }, 10000);
         (_a = this.user) === null || _a === void 0 ? void 0 : _a.setStatus("dnd");
     }
     registerCommands() {

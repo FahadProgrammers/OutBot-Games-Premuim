@@ -39,67 +39,73 @@ export default class جمع extends Command {
    const Canvas = canvas.createCanvas(700, 250);
     const ctx = Canvas.getContext("2d");
     const f = await SchemaTheme.findOne({
-      guildId: message.guild?.id
-    });
-    let filePath = path.resolve("src/utils/assets", "BOTBG.png");
-
-    if(f) {
-      switch(f.theme) {
-        case "1":
-          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png")
-        break;
-        case "2":
-          filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png")
-        break;
-      }
-    }
-   
-    await loadImage(filePath)
-      .then(async (image) => {
-        canvas.registerFont(
-          path.resolve(
-            "src/utils/assets/Fonts",
-            "alfont_com_Wafeq-SemiBold.otf"
-          ),
-          {
-            family: "ImageFont",
-          }
-        );
-
-    
-        ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
-        //Text
-        ctx.font = "27px ImageFont";
-        ctx.fillStyle = "White";
-        ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
-
-        //Time
-        ctx.font = "25px ImageFont";
-        ctx.fillStyle = "White";
-        switch(f?.theme) {
-          case "1":
-            ctx.fillText("5", 60, 235);
-            break;
-          case "2":
-            ctx.fillText("5", 43, 235);
-            break;
-        }
-
-        //Word
-        ctx.font = "25px ImageFont";
-        ctx.fillStyle = "White";
-        switch(f?.theme) {
-        case "1":
-        ctx.fillText(randomKey, 320, 115); // x 320
-        break;
-        case "2":
-        ctx.fillText(randomKey, 265, 115); // x 320
-        break;
-      }
-    })
-      .catch((err: any) => {
-        console.log(err);
+        guildId: message.guild?.id
       });
+      let filePath = path.resolve("src/utils/assets", "BOTBG.png");
+  
+      if(f) {
+        switch(f.theme) {
+          case "1":
+            filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background1.png")
+          break;
+          case "2":
+            filePath = path.resolve("src/utils/assets/Themes", "OutBot_Games_Background2.png")
+          break;
+        }
+      }
+     
+      await loadImage(filePath)
+        .then(async (image) => {
+          canvas.registerFont(
+            path.resolve(
+              "src/utils/assets/Fonts",
+              "alfont_com_Wafeq-SemiBold.otf"
+            ),
+            {
+              family: "ImageFont",
+            }
+          );
+  
+      
+          ctx.drawImage(image, 0, 0, Canvas.width, Canvas.height);
+          //Text
+          ctx.font = "27px ImageFont";
+          ctx.fillStyle = "White";
+          ctx.fillText("اكتب الكلمه قبل إنتهاء الوقت", 165, 180);
+  
+          //Time
+          ctx.font = "25px ImageFont";
+          ctx.fillStyle = "White";
+          switch(f?.theme) {
+            case "1":
+              ctx.fillText("5", 60, 235);
+              break;
+            case "2":
+              ctx.fillText("5", 43, 235);
+              break;
+              default:
+              ctx.fillText("5", 60, 235);
+              break;
+          }
+  
+          //Word
+          ctx.font = "25px ImageFont";
+          ctx.fillStyle = "White";
+          switch(f?.theme) {
+          case "1":
+          ctx.fillText(randomKey, 320, 115); // x 320
+          break;
+          case "2":
+          ctx.fillText(randomKey, 265, 115); // x 320
+          break;
+          default:
+          ctx.fillText(randomKey, 320, 115); // x 320
+          break;
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+        });
     const messageFetch = await message.reply({
       files: [Canvas.toBuffer()],
     });

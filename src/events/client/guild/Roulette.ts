@@ -170,15 +170,15 @@ export default class CommandHandler extends Event {
           guildId: interaction.guild?.id,
           userId: interaction.user?.id,
         });
-        // if (!findPointsRoulette || findPointsRoulette?.p < 100) {
-        //   await interaction.reply({
-        //     content: `ليس لديك النقاط الكافية لتفعيل الحارس الشخصي تحتاج الى: \`${
-        //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-        //     }\``,
-        //     ephemeral: true,
-        //   });
-        //   return;
-        // }
+        if (!findPointsRoulette || findPointsRoulette?.p < 100) {
+          await interaction.reply({
+            content: `ليس لديك النقاط الكافية لتفعيل الحارس الشخصي تحتاج الى: \`${
+              findPointsRoulette ? findPointsRoulette.p - 100 : "لاتملك"
+            }\``,
+            ephemeral: true,
+          });
+          return;
+        }
 
         const message = await interaction.channel?.messages.fetch(id);
         const findRoulette = await schemaGame.findOne({
@@ -237,15 +237,15 @@ export default class CommandHandler extends Event {
           guildId: interaction.guild?.id,
           userId: interaction.user?.id,
         });
-        // if (!findPointsRoulette || findPointsRoulette?.p < 150) {
-        //   await interaction.reply({
-        //     content: `ليس لديك النقاط الكافية لتفعيل الغاء روليت تحتاج الى: \`${
-        //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-        //     }\``,
-        //     ephemeral: true,
-        //   });
-        //   return;
-        // }
+        if (!findPointsRoulette || findPointsRoulette?.p < 150) {
+          await interaction.reply({
+            content: `ليس لديك النقاط الكافية لتفعيل الغاء روليت تحتاج الى: \`${
+              findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
+            }\``,
+            ephemeral: true,
+          });
+          return;
+        }
         const findRoulette = await schemaGame.findOne({
           guildId: interaction.guild?.id,
           channelId: interaction.channel?.id,
@@ -357,15 +357,15 @@ export default class CommandHandler extends Event {
           guildId: interaction.guild?.id,
           userId: interaction.user?.id,
         });
-        // if (!findPointsRoulette || findPointsRoulette?.p < 50) {
-        //   await interaction.reply({
-        //     content: `ليس لديك النقاط الكافية لتفعيل دبل نقاط روليت تحتاج الى: \`${
-        //       findPointsRoulette ? findPointsRoulette.p - 150 : "لاتملك"
-        //     }\``,
-        //     ephemeral: true,
-        //   });
-        //   return;
-        // }
+        if (!findPointsRoulette || findPointsRoulette?.p < 50) {
+          await interaction.reply({
+            content: `ليس لديك النقاط الكافية لتفعيل دبل نقاط روليت تحتاج الى: \`${
+              findPointsRoulette ? findPointsRoulette.p - 50 : "لاتملك"
+            }\``,
+            ephemeral: true,
+          });
+          return;
+        }
         const message = await interaction.channel?.messages.fetch(id);
         const findRoulette = await schemaGame.findOne({
           guildId: interaction.guild?.id,
